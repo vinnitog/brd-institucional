@@ -47,3 +47,17 @@ As imagens do Instagram e dos materiais de identidade indicam foco empresarial e
 - Estrutura pensada para conversão institucional: sobre, atuação, método e contato.
 - Interface responsiva com hierarquia editorial forte, grid limpo, cards de atuação e uma leitura de "inteligência aplicada" feita em CSS acessível.
 - Recharts foi avaliado na primeira implementação, mas ficou adiado até existir dado real de dashboard; para o site institucional, a versão CSS reduz bundle e melhora acessibilidade.
+
+## Ajustes Após Referências De Grandes Escritórios
+
+Referências consultadas em 2026-05-21:
+
+- Machado Meyer: navegação institucional com "Quem Somos", "Áreas de atuação", "Advogados", "Prêmios e Reconhecimentos", "Contato" e forte frente de "Inteligência Jurídica"; também destaca time, áreas, atualizações jurídicas e presença corporativa.
+- Lefosse: navegação por "Expertises", "Advogados", "O Escritório", "Radar Lefosse" e "Contato"; usa mensagem direta de crescimento/decisão, números institucionais e organização ampla de áreas por especialidade.
+
+Aplicação no BRD:
+
+- A assinatura visual do site passou a priorizar `BRD adv.` em vez da versão "Bernardo Advogados Associados", reforçando o escritório como banca coletiva de sócios.
+- A navegação passou a usar "Expertises", "Equipe" e "Inteligência", em linha com a arquitetura institucional de grandes escritórios.
+- Foi adicionada uma seção de time para explicar que Luís Bernardo idealizou o escritório, mas a atuação é feita com os demais sócios.
+- Foi adicionada uma seção de inteligência jurídica inspirada nos hubs editoriais das referências, mas em formato inicial, sem simular publicações ou prêmios inexistentes.
