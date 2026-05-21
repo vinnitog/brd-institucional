@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 590" role="img" aria-labelledby="title desc">
+  <title id="title">Mascote BRD em forma de B</title>
+  <desc id="desc">Letra B roxa com olhos, sorriso, bracos e balao de conversa.</desc>
+  <defs>
+    <linearGradient id="brdPurple" x1="78" x2="438" y1="82" y2="525" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B36BFF" />
+      <stop offset="0.48" stop-color="#964AFB" />
+      <stop offset="1" stop-color="#6420BD" />
+    </linearGradient>
+    <linearGradient id="brdPurpleDeep" x1="126" x2="360" y1="126" y2="498" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#964AFB" />
+      <stop offset="1" stop-color="#35185A" />
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-12%" width="140%" height="130%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="20" stdDeviation="16" flood-color="#09070F" flood-opacity="0.2" />
+    </filter>
+  </defs>
+
+  <ellipse cx="264" cy="548" rx="178" ry="24" fill="#09070F" opacity="0.14" />
+
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M125 286c-45 0-68-21-70-53" stroke="#35185A" stroke-width="22" />
+    <circle cx="55" cy="230" r="22" fill="#F7F7F4" stroke="#964AFB" stroke-width="8" />
+    <path d="M410 236c41-13 60-41 56-75" stroke="#35185A" stroke-width="22" />
+    <circle cx="463" cy="157" r="22" fill="#F7F7F4" stroke="#964AFB" stroke-width="8" />
+  </g>
+
+  <g filter="url(#softShadow)">
+    <path
+      fill="url(#brdPurple)"
+      d="M105 74h120c18 0 31 16 28 33l-25 134c-14 76-82 130-160 130H29c4-31 31-54 63-54h38l30-172H89l5-35c3-20 13-36 31-36z"
+    />
+    <path
+      fill="url(#brdPurple)"
+      d="M282 124h85c67 0 116 45 116 108 0 72-60 121-134 121h-34c-53 0-92-47-82-99l25-130z"
+    />
+    <path
+      fill="url(#brdPurpleDeep)"
+      d="M118 349h88c63 0 110 55 98 117l-17 87H73l34-182c2-13 10-22 11-22z"
+    />
+    <path
+      fill="url(#brdPurpleDeep)"
+      d="M334 349h39c73 0 126 50 126 118 0 78-64 126-146 126H241l26-137c12-63 69-107 132-107z"
+    />
+  </g>
+
+  <g aria-hidden="true">
+    <ellipse cx="339" cy="221" rx="24" ry="30" fill="#F7F7F4" />
+    <ellipse cx="406" cy="218" rx="24" ry="30" fill="#F7F7F4" />
+    <circle cx="346" cy="229" r="10" fill="#09070F" />
+    <circle cx="399" cy="226" r="10" fill="#09070F" />
+    <circle cx="350" cy="224" r="3.5" fill="#FFFFFF" />
+    <circle cx="403" cy="221" r="3.5" fill="#FFFFFF" />
+    <path d="M333 182c12-12 31-14 46-4" fill="none" stroke="#35185A" stroke-linecap="round" stroke-width="9" />
+    <path d="M390 178c15-10 33-8 45 3" fill="none" stroke="#35185A" stroke-linecap="round" stroke-width="9" />
+    <path d="M337 268c22 27 66 26 88-2" fill="none" stroke="#F7F7F4" stroke-linecap="round" stroke-width="12" />
+    <path d="M349 292c17 11 43 10 61-1" fill="none" stroke="#35185A" stroke-linecap="round" stroke-width="7" opacity="0.45" />
+  </g>
+
+  <g aria-hidden="true">
+    <path d="M118 117h72" stroke="#D9C2FF" stroke-linecap="round" stroke-width="10" opacity="0.75" />
+    <path d="M112 154h46" stroke="#D9C2FF" stroke-linecap="round" stroke-width="8" opacity="0.5" />
+    <path d="M118 401h58" stroke="#D9C2FF" stroke-linecap="round" stroke-width="8" opacity="0.45" />
+  </g>
+
+  <g aria-hidden="true">
+    <path
+      d="M394 53h64c24 0 43 18 43 41s-19 41-43 41h-27l-31 29 6-29h-12c-24 0-43-18-43-41s19-41 43-41z"
+      fill="#F7F7F4"
+      stroke="#964AFB"
+      stroke-width="8"
+    />
+    <circle cx="411" cy="94" r="5.5" fill="#964AFB" />
+    <circle cx="447" cy="94" r="5.5" fill="#964AFB" />
+    <circle cx="483" cy="94" r="5.5" fill="#964AFB" />
+  </g>
+</svg>

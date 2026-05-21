@@ -64,25 +64,25 @@ const partners = [
     name: "Luís Bernardo Júnior",
     role: "Sócio fundador",
     focus: "Estratégia empresarial, governança e condução institucional do escritório.",
-    image: "assets/brand/partners/luis.jpg",
+    image: "assets/brand/partners/luis.png",
   },
   {
     name: "Letícia Barriento",
     role: "Sócia",
     focus: "Comunicação institucional, inteligência jurídica e atuação consultiva.",
-    image: "assets/brand/partners/leticia.jpg",
+    image: "assets/brand/partners/leticia.png",
   },
   {
     name: "André Luis",
     role: "Sócio",
     focus: "Atuação empresarial com presença próxima e leitura prática dos desafios do cliente.",
-    image: "assets/brand/partners/andre.jpg",
+    image: "assets/brand/partners/andre.png",
   },
   {
     name: "Fernanda Félix",
     role: "Sócia",
     focus: "Apoio estratégico em demandas consultivas, preventivas e de rotina empresarial.",
-    image: "assets/brand/partners/fernanda.jpg",
+    image: "assets/brand/partners/fernanda.png",
   },
 ];
 
@@ -101,6 +101,7 @@ const insights = [
   },
 ];
 
+
 const mapUrl = "https://www.google.com/maps/search/?api=1&query=BRD%20Advogados%20Associados%20Rua%20Sete%20de%20Setembro%201359%20Mar%C3%ADlia%20SP";
 
 const socialLinks = [
@@ -117,6 +118,46 @@ const socialLinks = [
     href: "https://www.facebook.com/people/Bernardo-Advogados-Associados/61570437647099/?mibextid=wwXIfr&rdid=546vsHgdDovVzc5O&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F16ZTurjKJJ%2F%3Fmibextid%3DwwXIfr",
   },
 ];
+
+const contactEmail = "contato@brd.adv.br";
+const chatFormEndpoint = import.meta.env.VITE_CONTACT_FORM_ENDPOINT ?? "";
+const chatFormAccessKey = import.meta.env.VITE_CONTACT_FORM_ACCESS_KEY ?? "";
+
+const contactTopics = [
+  "Recuperacao de credito",
+  "Contratos",
+  "LGPD e dados",
+  "Licitacoes",
+  "Auditorias",
+  "ESG",
+  "Outro assunto",
+];
+
+const initialChatForm = {
+  name: "",
+  email: "",
+  phone: "",
+  topic: "",
+  message: "",
+  schedule: "",
+};
+
+function buildChatEmailBody(form) {
+  return [
+    "Novo contato iniciado pelo chatbot BRD.",
+    "",
+    `Nome: ${form.name}`,
+    `E-mail: ${form.email}`,
+    `Telefone: ${form.phone || "Nao informado"}`,
+    `Assunto: ${form.topic}`,
+    `Preferencia de horario: ${form.schedule || "Nao informada"}`,
+    "",
+    "Resumo informado:",
+    form.message,
+    "",
+    "Observacao: a pessoa foi informada de que o canal nao substitui consulta juridica e que documentos sensiveis nao devem ser enviados por aqui.",
+  ].join("\n");
+}
 
 function MapPinIcon() {
   return (
@@ -148,6 +189,163 @@ function SocialIcon({ type }) {
   }
 
   return <span aria-hidden="true">{type === "linkedin" ? "in" : "f"}</span>;
+}
+
+function ChatBubbleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M5.4 16.8a7.8 7.8 0 1 1 3.1 2.5l-3.3.9.9-3.4Z" />
+      <path d="M8.8 11.3h6.4" />
+      <path d="M8.8 14h4.2" />
+    </svg>
+  );
+}
+
+function LegalContactChat() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [form, setForm] = useState(initialChatForm);
+  const [status, setStatus] = useState("idle");
+  const [feedback, setFeedback] = useState("");
+
+  const updateField = (event) => {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setStatus("sending");
+    setFeedback("");
+
+    const emailBody = buildChatEmailBody(form);
+    const subject = "Novo contato pelo chatbot BRD";
+    const payload = {
+      ...(chatFormAccessKey ? { access_key: chatFormAccessKey } : {}),
+      subject,
+      from_name: form.name,
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      topic: form.topic,
+      schedule: form.schedule,
+      message: emailBody,
+    };
+
+    try {
+      if (chatFormEndpoint) {
+        const response = await fetch(chatFormEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error("Contact form request failed");
+        }
+
+        setStatus("sent");
+        setFeedback("Contato enviado. A equipe do BRD retornara assim que possivel.");
+        setForm(initialChatForm);
+        return;
+      }
+
+      window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+      setStatus("sent");
+      setFeedback("Abrimos seu e-mail com a mensagem pronta para envio ao BRD.");
+      setForm(initialChatForm);
+    } catch {
+      setStatus("error");
+      setFeedback("Nao foi possivel enviar agora. Use o e-mail contato@brd.adv.br ou tente novamente em instantes.");
+    }
+  };
+
+  return (
+    <div className={`legal-chat ${isOpen ? "is-open" : ""}`}>
+      <button
+        className="legal-chat-toggle"
+        type="button"
+        aria-controls="legal-chat-panel"
+        aria-expanded={isOpen}
+        aria-label={isOpen ? "Fechar atendimento inicial" : "Abrir atendimento inicial"}
+        onClick={() => setIsOpen((current) => !current)}
+      >
+        <span className="legal-chat-toggle-icon" aria-hidden="true">
+          <ChatBubbleIcon />
+        </span>
+        <span>Primeiro contato</span>
+      </button>
+
+      {isOpen ? (
+        <aside id="legal-chat-panel" className="legal-chat-panel" aria-label="Atendimento inicial BRD">
+          <div className="legal-chat-header">
+            <img src={assetPath("assets/brand/brd-mascot-b.svg")} alt="" aria-hidden="true" />
+            <div>
+              <span>Atendimento inicial</span>
+              <strong>BRD Advocacia</strong>
+            </div>
+            <button type="button" aria-label="Fechar atendimento inicial" onClick={() => setIsOpen(false)}>
+              <span aria-hidden="true">x</span>
+            </button>
+          </div>
+
+          <div className="legal-chat-messages" aria-live="polite">
+            <p>
+              Posso registrar seu contato para a equipe entender o assunto e indicar o melhor
+              caminho para uma reuniao inicial.
+            </p>
+            <p>
+              Este canal nao substitui consulta juridica, nao analisa documentos e nao antecipa resultado.
+              Evite enviar dados sensiveis por aqui.
+            </p>
+          </div>
+
+          <form className="legal-chat-form" onSubmit={handleSubmit}>
+            <label>
+              Nome
+              <input name="name" value={form.name} onChange={updateField} required autoComplete="name" />
+            </label>
+            <label>
+              E-mail
+              <input name="email" value={form.email} onChange={updateField} required type="email" autoComplete="email" />
+            </label>
+            <label>
+              Telefone, se preferir retorno por ligacao
+              <input name="phone" value={form.phone} onChange={updateField} type="tel" autoComplete="tel" />
+            </label>
+            <label>
+              Assunto principal
+              <select name="topic" value={form.topic} onChange={updateField} required>
+                <option value="">Selecione</option>
+                {contactTopics.map((topic) => (
+                  <option key={topic} value={topic}>{topic}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Conte em poucas linhas o que aconteceu
+              <textarea
+                name="message"
+                value={form.message}
+                onChange={updateField}
+                required
+                rows="4"
+                placeholder="Descreva o contexto, sem anexar documentos ou dados sensiveis."
+              />
+            </label>
+            <label>
+              Melhor periodo para retorno
+              <input name="schedule" value={form.schedule} onChange={updateField} placeholder="Ex.: manha, tarde ou dia especifico" />
+            </label>
+
+            <button className="button button-primary" type="submit" disabled={status === "sending"}>
+              {status === "sending" ? "Enviando..." : "Enviar para analise"}
+            </button>
+            {feedback ? <p className={`legal-chat-feedback ${status}`}>{feedback}</p> : null}
+          </form>
+        </aside>
+      ) : null}
+    </div>
+  );
 }
 
 function App() {
@@ -344,6 +542,7 @@ function App() {
           </div>
         </section>
 
+
         <section className="contact" id="contato" aria-labelledby="contact-title">
           <div>
             <p className="eyebrow">Contato</p>
@@ -398,6 +597,8 @@ function App() {
           </div>
         </div>
       </footer>
+
+      <LegalContactChat />
     </>
   );
 }

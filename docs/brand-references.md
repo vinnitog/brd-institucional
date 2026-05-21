@@ -24,7 +24,7 @@ Documento de acompanhamento criado durante o desenvolvimento do site institucion
 - `public/assets/brand/icon-purple.png`: ícone institucional roxo.
 - `public/assets/brand/hero-background.jpg`: wallpaper com lema e atmosfera visual da marca.
 - `public/assets/brand/avatar.png`: avatar social oficial.
-- `public/assets/brand/partners/*.jpg`: fotos otimizadas dos sócios a partir de `Instagram\sócios`.
+- `public/assets/brand/partners/*.png`: fotos recortadas dos sócios a partir de `Instagram\sócios`.
 - `public/fonts/DMSans-VariableFont_opsz,wght.ttf`: fonte principal.
 - `public/fonts/Gupter-Regular.ttf`, `Gupter-Medium.ttf`, `Gupter-Bold.ttf`: fonte editorial.
 
@@ -55,6 +55,15 @@ As imagens do Instagram e dos materiais de identidade indicam foco empresarial e
 - Estrutura pensada para conversão institucional: sobre, atuação, método e contato.
 - Interface responsiva com hierarquia editorial forte, grid limpo, cards de atuação e uma leitura de "inteligência aplicada" feita em CSS acessível.
 - Recharts foi avaliado na primeira implementação, mas ficou adiado até existir dado real de dashboard; para o site institucional, a versão CSS reduz bundle e melhora acessibilidade.
+
+## Mascote BRD
+
+- Conceito criado em 2026-05-21: dar vida ao "B" da marca para pontos de contato digitais, especialmente atendimento inicial e futuro chatbot.
+- Asset principal: `public/assets/brand/brd-mascot-b.svg`, em vetor leve para uso no site, posts, materiais de apoio e interfaces conversacionais.
+- Elementos visuais: olhos, bracos, sorriso e balao de conversa para comunicar proximidade sem infantilizar a advocacia.
+- Paleta aplicada: roxo BRD `#964AFB`, roxo profundo `#35185A`, fundo claro `#F7F7F4` e preto institucional `#09070F`.
+- Aplicacoes sugeridas: avatar do chatbot, widget de primeiro contato, estados de boas-vindas, posts de inteligencia juridica, videos curtos e fluxos de onboarding.
+- Diretriz de uso: preferir versoes pequenas e pontuais; evitar substituir a assinatura oficial do escritorio pelo mascote em pecas formais.
 
 ## Ajustes Após Referências De Grandes Escritórios
 
