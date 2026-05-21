@@ -119,7 +119,7 @@ const socialLinks = [
   },
 ];
 
-const contactEmail = "vinnitog@gmail.com";
+const contactEmail = "contato@brd.adv.br";
 const chatFormEndpoint = import.meta.env.VITE_CONTACT_FORM_ENDPOINT ?? "";
 const chatFormAccessKey = import.meta.env.VITE_CONTACT_FORM_ACCESS_KEY ?? "";
 
