@@ -65,6 +65,7 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /id="main-navigation"/);
   assert.match(app, /href="#socios"/);
   assert.match(app, /id="socios"/);
+  assert.match(app, /href="#sobre"[\s\S]*href="#socios"[\s\S]*href="#expertises"/);
   assert.doesNotMatch(app, /href="#equipe"|id="equipe"/);
   assert.match(app, /https:\/\/www\.instagram\.com\/brd\.adv\//);
   assert.match(app, /linkedin\.com\/company\/bernardo-advogados-associados-brd/);
