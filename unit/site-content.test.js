@@ -36,6 +36,9 @@ test("homepage contains the core BRD institutional content", () => {
   const app = read("src/main.jsx");
   for (const term of [
     "BRD Advocacia",
+    "Expertises",
+    "Nosso time",
+    "Inteligência jurídica",
     "Recuperação de crédito",
     "Auditorias",
     "Adequação à LGPD",
@@ -48,6 +51,7 @@ test("homepage contains the core BRD institutional content", () => {
     assert.match(app, new RegExp(term));
   }
   assert.match(app, /Prevenção/);
+  assert.doesNotMatch(app, /Bernardo Advogados Associados/);
 });
 
 test("frontend styling uses local assets and responsive safeguards", () => {
@@ -63,6 +67,7 @@ test("frontend styling uses local assets and responsive safeguards", () => {
 test("brand assets stay web friendly and chart stays lightweight", () => {
   const packageJson = JSON.parse(read("package.json"));
   assert.equal(packageJson.dependencies.recharts, undefined);
+  assert.match(packageJson.scripts["build:pages"], /--base=\/brd-institucional\//);
 
   const maxBytesByAsset = {
     "public/assets/brand/hero-background.jpg": 450_000,
@@ -75,4 +80,12 @@ test("brand assets stay web friendly and chart stays lightweight", () => {
     const size = fs.statSync(path.join(root, file)).size;
     assert.ok(size <= maxBytes, `${file} should stay under ${maxBytes} bytes`);
   }
+});
+
+test("github pages deployment builds the dist artifact", () => {
+  const workflow = read(".github/workflows/pages.yml");
+  assert.match(workflow, /npm ci/);
+  assert.match(workflow, /npm run build:pages/);
+  assert.match(workflow, /actions\/deploy-pages@v4/);
+  assert.match(workflow, /path: dist/);
 });
