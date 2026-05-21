@@ -192,8 +192,10 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /\.social-link\s*\{[\s\S]*min-height: 44px/);
   assert.match(styles, /\.legal-chat\s*\{[\s\S]*position: fixed/);
   assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*max-height: calc\(100svh - 128px\)/);
+  assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*overflow: auto/);
   assert.match(styles, /\.legal-chat-form input,\s*\.legal-chat-form select,\s*\.legal-chat-form textarea/);
-  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat\s*\{[\s\S]*left: 12px/);
+  assert.doesNotMatch(styles, /\.legal-chat-form\s*\{[^}]*overflow: auto/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat\s*\{[\s\S]*left: auto/);
   assert.doesNotMatch(styles, /\.footer-social a\s*\{[^}]*min-height:\s*auto/);
   assert.match(styles, /\.partners-heading\s*\{[\s\S]*max-width: 980px/);
   assert.doesNotMatch(styles, /\.partners-heading\s*\{[^}]*display:\s*grid/);
@@ -201,8 +203,10 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.hero\s*\{[\s\S]*min-height: min\(700px, calc\(90svh - 76px\)\)/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partners-grid\s*\{[\s\S]*grid-template-columns: 1fr/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-card\s*\{[\s\S]*grid-template-columns: 1fr/);
-  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat\s*\{[\s\S]*left: 12px/);
-  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[\s\S]*max-height: calc\(100svh - 106px\)/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-photo\s*\{[\s\S]*height: clamp\(190px, 58vw, 240px\)/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat\s*\{[\s\S]*left: auto/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[\s\S]*bottom: 84px/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[\s\S]*max-height: min\(620px, calc\(100svh - 108px\)\)/);
   assert.match(styles, /center center \/ cover/);
   assert.match(styles, /font-size: clamp\(3rem, 12vw, 4\.2rem\)/);
   assert.match(styles, /scroll-padding-top: 96px/);
