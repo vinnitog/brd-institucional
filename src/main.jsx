@@ -170,8 +170,8 @@ function App() {
         </button>
         <nav id="main-navigation" className={isMenuOpen ? "is-open" : ""}>
           <a href="#sobre" onClick={closeMenu}>Sobre</a>
-          <a href="#expertises" onClick={closeMenu}>Expertises</a>
           <a href="#socios" onClick={closeMenu}>Sócios</a>
+          <a href="#expertises" onClick={closeMenu}>Expertises</a>
           <a href="#inteligencia" onClick={closeMenu}>Inteligência</a>
           <a href="#contato" onClick={closeMenu}>Contato</a>
         </nav>
