@@ -59,6 +59,34 @@ const teamPrinciples = [
   "Leitura multidisciplinar do negócio",
 ];
 
+const partners = [
+  {
+    name: "Luís Bernardo Júnior",
+    role: "Sócio fundador",
+    focus: "Estratégia empresarial, governança e condução institucional do escritório.",
+  },
+  {
+    name: "Letícia Barriento",
+    role: "Sócia",
+    focus: "Comunicação institucional, inteligência jurídica e atuação consultiva.",
+  },
+  {
+    name: "André Luis",
+    role: "Sócio",
+    focus: "Atuação empresarial com presença próxima e leitura prática dos desafios do cliente.",
+  },
+  {
+    name: "Fernanda",
+    role: "Sócia",
+    focus: "Apoio estratégico em demandas consultivas, preventivas e de rotina empresarial.",
+  },
+  {
+    name: "Maria",
+    role: "Sócia",
+    focus: "Atuação integrada aos projetos jurídicos e à relação direta com clientes.",
+  },
+];
+
 const insights = [
   {
     label: "Dados e tecnologia",
@@ -71,6 +99,19 @@ const insights = [
   {
     label: "Empresas",
     title: "Crédito, crise e conformidade tratados antes do litígio.",
+  },
+];
+
+const socialLinks = [
+  { label: "Instagram", href: "https://www.instagram.com/brd.adv/" },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/bernardo-advogados-associados-brd/posts/?feedView=all",
+  },
+  { label: "YouTube", href: "https://www.youtube.com/channel/UCBEoHdFSNDyOLZkpyo5bTLg" },
+  {
+    label: "Facebook",
+    href: "https://www.facebook.com/people/Bernardo-Advogados-Associados/61570437647099/?mibextid=wwXIfr&rdid=546vsHgdDovVzc5O&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F16ZTurjKJJ%2F%3Fmibextid%3DwwXIfr",
   },
 ];
 
@@ -99,7 +140,7 @@ function App() {
         <nav id="main-navigation" className={isMenuOpen ? "is-open" : ""}>
           <a href="#sobre" onClick={closeMenu}>Sobre</a>
           <a href="#expertises" onClick={closeMenu}>Expertises</a>
-          <a href="#equipe" onClick={closeMenu}>Equipe</a>
+          <a href="#socios" onClick={closeMenu}>Sócios</a>
           <a href="#inteligencia" onClick={closeMenu}>Inteligência</a>
           <a href="#contato" onClick={closeMenu}>Contato</a>
         </nav>
@@ -108,10 +149,8 @@ function App() {
       <main id="inicio">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-content">
-            <p className="eyebrow">Advocacia empresarial</p>
-            <img className="hero-logo" src={assetPath("assets/brand/logo-full-dark.png")} alt="BRD Advocacia" />
             <h1 id="hero-title">Decisões jurídicas com visão de negócio.</h1>
-            <p className="hero-lead">Guiados pela tradição. Impulsionados pela inovação.</p>
+            <p className="sr-only">Guiados pela tradição. Impulsionados pela inovação.</p>
             <div className="hero-actions" aria-label="Ações principais">
               <a className="button button-primary" href="#contato">
                 Falar com o escritório
@@ -126,15 +165,15 @@ function App() {
         <section className="intro-band" aria-label="Resumo institucional">
           <div>
             <span>Atuação</span>
-            <strong>consultiva, preventiva e contenciosa</strong>
+            <strong>Consultiva, preventiva e contenciosa</strong>
           </div>
           <div>
             <span>Perfil</span>
-            <strong>banca empresarial com sócios próximos</strong>
+            <strong>Banca empresarial com sócios próximos</strong>
           </div>
           <div>
             <span>Foco</span>
-            <strong>segurança jurídica para decisões relevantes</strong>
+            <strong>Segurança jurídica para decisões relevantes</strong>
           </div>
         </section>
 
@@ -145,7 +184,7 @@ function App() {
           </div>
           <div className="body-copy">
             <p>
-              A BRD une experiência jurídica, governança e uma leitura prática dos desafios
+              O BRD une experiência jurídica, governança e uma leitura prática dos desafios
               empresariais. O escritório preserva o rigor técnico da advocacia tradicional e
               aplica inovação onde ela melhora velocidade, clareza e tomada de decisão.
             </p>
@@ -157,17 +196,38 @@ function App() {
           </div>
         </section>
 
-        <section className="section team" id="equipe">
-          <div className="team-panel">
-            <div>
-              <p className="eyebrow">Nosso time</p>
-              <h2>Estratégia compartilhada, responsabilidade individual.</h2>
+        <section className="section partners" id="socios">
+          <div className="section-heading partners-heading">
+            <p className="eyebrow">Sócios</p>
+            <h2>Perfis que combinam proximidade, técnica e visão empresarial.</h2>
+            <p>
+              A seção parte das referências institucionais disponíveis e apresenta o time com
+              sobriedade, sem antecipar currículos ou credenciais ainda não documentadas no site.
+            </p>
+          </div>
+          <div className="partners-layout">
+            <div className="partners-intro">
+              <img src={assetPath("assets/brand/icon-purple.png")} alt="" aria-hidden="true" />
+              <ul className="team-list" aria-label="Princípios dos sócios BRD">
+                {teamPrinciples.map((principle) => (
+                  <li key={principle}>{principle}</li>
+                ))}
+              </ul>
             </div>
-            <ul className="team-list" aria-label="Princípios do time BRD">
-              {teamPrinciples.map((principle) => (
-                <li key={principle}>{principle}</li>
+            <div className="partners-grid">
+              {partners.map((partner) => (
+                <article className="partner-card" key={partner.name}>
+                  <div className="partner-initial" aria-hidden="true">
+                    {partner.name.slice(0, 1)}
+                  </div>
+                  <div>
+                    <span>{partner.role}</span>
+                    <h3>{partner.name}</h3>
+                    <p>{partner.focus}</p>
+                  </div>
+                </article>
               ))}
-            </ul>
+            </div>
           </div>
         </section>
 
@@ -204,7 +264,7 @@ function App() {
             <div className="chart-panel" aria-label="Indicadores qualitativos do método BRD">
               <div className="chart-copy">
                 <span>Inteligência aplicada</span>
-                <strong>da análise preventiva ao plano de ação</strong>
+                <strong>Da análise preventiva ao plano de ação</strong>
               </div>
               <ul className="metric-list" aria-label="Indicadores qualitativos do método BRD">
                 {intelligenceData.map((item) => (
@@ -242,9 +302,9 @@ function App() {
             <p className="eyebrow">Identidade</p>
             <h2>Elegância sóbria, ritmo digital e presença institucional.</h2>
             <p>
-              O visual do site segue a marca oficial: preto profundo, branco, roxo BRD,
-              textura sutil e tipografia com contraste entre a firmeza editorial da Gupter
-              e a clareza contemporânea da DM Sans.
+              A presença visual do BRD foi pensada para comunicar confiança, clareza e
+              atualidade, mantendo uma linguagem institucional consistente em todos os pontos
+              de contato.
             </p>
           </div>
         </section>
@@ -266,8 +326,40 @@ function App() {
       </main>
 
       <footer>
-        <img src={assetPath("assets/brand/logo-full-light.png")} alt="BRD Advocacia" />
-        <p>Guiados pela tradição. Impulsionados pela inovação.</p>
+        <div className="footer-brand">
+          <img src={assetPath("assets/brand/logo-full-light.png")} alt="BRD Advocacia" />
+          <p>Advocacia empresarial em Marília/SP, com atuação consultiva, preventiva e contenciosa.</p>
+        </div>
+        <div className="footer-grid">
+          <address>
+            <span>Localização</span>
+            Rua Sete de Setembro, n.° 1359<br />
+            Senador Salgado Filho<br />
+            Marília/SP, 17502-020
+          </address>
+          <div>
+            <span>Como chegar</span>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=BRD%20Advogados%20Associados%20Rua%20Sete%20de%20Setembro%201359%20Mar%C3%ADlia%20SP"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Abrir rota no Google Maps
+            </a>
+            <a href="tel:+5514998325395">(14) 99832-5395</a>
+            <a href="mailto:contato@brd.adv.br">contato@brd.adv.br</a>
+          </div>
+          <div>
+            <span>Redes sociais</span>
+            <nav className="footer-social" aria-label="Redes sociais do BRD">
+              {socialLinks.map((social) => (
+                <a key={social.label} href={social.href} target="_blank" rel="noreferrer">
+                  {social.label}
+                </a>
+              ))}
+            </nav>
+          </div>
+        </div>
       </footer>
     </>
   );
