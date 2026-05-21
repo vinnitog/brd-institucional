@@ -2,6 +2,8 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 
+const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
+
 const services = [
   {
     title: "Recuperação de crédito",
@@ -77,7 +79,7 @@ function App() {
     <>
       <header className="site-header" aria-label="Navegação principal">
         <a className="brand" href="#inicio" aria-label="BRD Advocacia">
-          <img src="/assets/brand/logo-full-dark.png" alt="BRD Advocacia" />
+          <img src={assetPath("assets/brand/logo-full-dark.png")} alt="BRD Advocacia" />
         </a>
         <nav>
           <a href="#sobre">Sobre</a>
@@ -92,7 +94,7 @@ function App() {
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-content">
             <p className="eyebrow">Advocacia empresarial</p>
-            <img className="hero-logo" src="/assets/brand/logo-full-dark.png" alt="BRD Advocacia" />
+            <img className="hero-logo" src={assetPath("assets/brand/logo-full-dark.png")} alt="BRD Advocacia" />
             <h1 id="hero-title">Decisões jurídicas com visão de negócio.</h1>
             <p className="hero-lead">Guiados pela tradição. Impulsionados pela inovação.</p>
             <div className="hero-actions" aria-label="Ações principais">
@@ -219,7 +221,7 @@ function App() {
 
         <section className="section identity">
           <div className="identity-mark">
-            <img src="/assets/brand/icon-purple.png" alt="" aria-hidden="true" />
+            <img src={assetPath("assets/brand/icon-purple.png")} alt="" aria-hidden="true" />
           </div>
           <div>
             <p className="eyebrow">Identidade</p>
@@ -249,7 +251,7 @@ function App() {
       </main>
 
       <footer>
-        <img src="/assets/brand/logo-full-light.png" alt="BRD Advocacia" />
+        <img src={assetPath("assets/brand/logo-full-light.png")} alt="BRD Advocacia" />
         <p>Guiados pela tradição. Impulsionados pela inovação.</p>
       </footer>
     </>

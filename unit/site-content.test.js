@@ -54,6 +54,12 @@ test("homepage contains the core BRD institutional content", () => {
   assert.doesNotMatch(app, /Bernardo Advogados Associados/);
 });
 
+test("public assets in JSX respect the Vite base path", () => {
+  const app = read("src/main.jsx");
+  assert.match(app, /import\.meta\.env\.BASE_URL/);
+  assert.doesNotMatch(app, /src="\/assets\/brand/);
+});
+
 test("frontend styling uses local assets and responsive safeguards", () => {
   const styles = read("src/styles.css");
   assert.match(styles, /@font-face/);
