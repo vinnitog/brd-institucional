@@ -64,7 +64,7 @@ test("homepage contains the core BRD institutional content", () => {
     "Marília/SP",
     "17502-020",
     "Redes sociais",
-    "Primeiro contato",
+    "Fale comigo!",
     "Atendimento inicial",
   ]) {
     assert.match(app, new RegExp(term));
@@ -89,8 +89,8 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /facebook\.com\/people\/Bernardo-Advogados-Associados/);
   assert.match(app, /google\.com\/maps\/search/);
   assert.match(app, /tel:\+5514998325395/);
-  assert.match(app, /mailto:contato@brd\.adv\.br/);
-  assert.match(app, /contactEmail = "contato@brd\.adv\.br"/);
+  assert.match(app, /mailto:\$\{contactEmail\}/);
+  assert.match(app, /contactEmail = "vinnitog@gmail\.com"/);
   assert.match(app, /function MapPinIcon/);
   assert.match(app, /function SocialIcon/);
   assert.match(app, /icon: "instagram"/);
@@ -101,7 +101,6 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /className="footer-route"[\s\S]*href=\{mapUrl\}/);
   assert.match(app, /className="social-link"/);
   assert.match(app, /function LegalContactChat/);
-  assert.match(app, /function ChatBubbleIcon/);
   assert.match(app, /className=\{`legal-chat \$\{isOpen \? "is-open" : ""\}`\}/);
   assert.match(app, /assets\/brand\/brd-mascot-b\.svg/);
   assert.match(app, /aria-controls="legal-chat-panel"/);
@@ -123,14 +122,17 @@ test("homepage offers a legally safe guided first-contact chat", () => {
 
   for (const term of [
     "function LegalContactChat",
-    "Primeiro contato",
+    "Fale comigo!",
     "Atendimento inicial",
-    "Este canal nao substitui consulta juridica",
-    "nao analisa documentos",
-    "nao antecipa resultado",
-    "Evite enviar dados sensiveis",
-    "Enviar para analise",
-    "Novo contato pelo chatbot BRD",
+    "Este canal não substitui consulta jurídica",
+    "não analisa documentos",
+    "não antecipa resultado",
+    "Evite enviar dados sensíveis",
+    "Enviar para análise",
+    "Um novo contato foi iniciado pelo chatbot do site.",
+    "[Site BRD] Novo contato",
+    "Dados do contato",
+    "Observação de segurança",
     "VITE_CONTACT_FORM_ENDPOINT",
     "VITE_CONTACT_FORM_ACCESS_KEY",
     "window.location.href = `mailto:${contactEmail}",
@@ -150,8 +152,12 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   }
 
   assert.match(app, /fetch\(chatFormEndpoint/);
+  assert.match(app, /to_email: contactEmail/);
+  assert.match(app, /reply_to: form\.email/);
   assert.match(app, /buildChatEmailBody/);
   assert.match(app, /brd-mascot-b\.svg/);
+  assert.match(app, /Melhor período para retorno/);
+  assert.match(app, /placeholder="Ex\.: manhã, tarde ou dia específico"/);
   assert.doesNotMatch(app, /indeniza[cç][aã]o garantida|caso ganho|resultado garantido/i);
 });
 
@@ -181,7 +187,7 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /\.legal-chat\s*\{/);
   assert.match(styles, /\.legal-chat-toggle/);
   assert.match(styles, /\.legal-chat-panel/);
-  assert.match(styles, /\.legal-chat-header img/);
+  assert.match(styles, /\.legal-chat-toggle-icon img/);
   assert.match(styles, /\.legal-chat-feedback\.sent/);
   assert.match(styles, /\.social-link\s*\{[\s\S]*min-height: 44px/);
   assert.match(styles, /\.legal-chat\s*\{[\s\S]*position: fixed/);
