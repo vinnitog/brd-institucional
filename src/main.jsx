@@ -119,15 +119,15 @@ const socialLinks = [
   },
 ];
 
-const contactEmail = "contato@brd.adv.br";
+const contactEmail = "vinnitog@gmail.com";
 const chatFormEndpoint = import.meta.env.VITE_CONTACT_FORM_ENDPOINT ?? "";
 const chatFormAccessKey = import.meta.env.VITE_CONTACT_FORM_ACCESS_KEY ?? "";
 
 const contactTopics = [
-  "Recuperacao de credito",
+  "Recuperação de crédito",
   "Contratos",
   "LGPD e dados",
-  "Licitacoes",
+  "Licitações",
   "Auditorias",
   "ESG",
   "Outro assunto",
@@ -144,18 +144,23 @@ const initialChatForm = {
 
 function buildChatEmailBody(form) {
   return [
-    "Novo contato iniciado pelo chatbot BRD.",
+    "Olá, equipe BRD.",
     "",
+    "Um novo contato foi iniciado pelo chatbot do site.",
+    "",
+    "Dados do contato",
+    "----------------",
     `Nome: ${form.name}`,
     `E-mail: ${form.email}`,
-    `Telefone: ${form.phone || "Nao informado"}`,
-    `Assunto: ${form.topic}`,
-    `Preferencia de horario: ${form.schedule || "Nao informada"}`,
+    `Telefone: ${form.phone || "Não informado"}`,
+    `Assunto principal: ${form.topic}`,
+    `Melhor período para retorno: ${form.schedule || "Não informado"}`,
     "",
     "Resumo informado:",
     form.message,
     "",
-    "Observacao: a pessoa foi informada de que o canal nao substitui consulta juridica e que documentos sensiveis nao devem ser enviados por aqui.",
+    "Observação de segurança:",
+    "A pessoa foi informada de que este canal não substitui consulta jurídica, não analisa documentos e não antecipa resultado. Também foi orientada a não enviar dados sensíveis pelo formulário.",
   ].join("\n");
 }
 
@@ -191,16 +196,6 @@ function SocialIcon({ type }) {
   return <span aria-hidden="true">{type === "linkedin" ? "in" : "f"}</span>;
 }
 
-function ChatBubbleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M5.4 16.8a7.8 7.8 0 1 1 3.1 2.5l-3.3.9.9-3.4Z" />
-      <path d="M8.8 11.3h6.4" />
-      <path d="M8.8 14h4.2" />
-    </svg>
-  );
-}
-
 function LegalContactChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState(initialChatForm);
@@ -218,11 +213,13 @@ function LegalContactChat() {
     setFeedback("");
 
     const emailBody = buildChatEmailBody(form);
-    const subject = "Novo contato pelo chatbot BRD";
+    const subject = `[Site BRD] Novo contato - ${form.topic || "Atendimento inicial"}`;
     const payload = {
       ...(chatFormAccessKey ? { access_key: chatFormAccessKey } : {}),
       subject,
+      to_email: contactEmail,
       from_name: form.name,
+      reply_to: form.email,
       name: form.name,
       email: form.email,
       phone: form.phone,
@@ -244,18 +241,18 @@ function LegalContactChat() {
         }
 
         setStatus("sent");
-        setFeedback("Contato enviado. A equipe do BRD retornara assim que possivel.");
+        setFeedback("Contato enviado. A equipe do BRD retornará assim que possível.");
         setForm(initialChatForm);
         return;
       }
 
       window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
       setStatus("sent");
-      setFeedback("Abrimos seu e-mail com a mensagem pronta para envio ao BRD.");
+      setFeedback("Abrimos seu e-mail com uma mensagem pronta para envio ao BRD.");
       setForm(initialChatForm);
     } catch {
       setStatus("error");
-      setFeedback("Nao foi possivel enviar agora. Use o e-mail contato@brd.adv.br ou tente novamente em instantes.");
+      setFeedback(`Não foi possível enviar agora. Use o e-mail ${contactEmail} ou tente novamente em instantes.`);
     }
   };
 
@@ -270,15 +267,14 @@ function LegalContactChat() {
         onClick={() => setIsOpen((current) => !current)}
       >
         <span className="legal-chat-toggle-icon" aria-hidden="true">
-          <ChatBubbleIcon />
+          <img src={assetPath("assets/brand/brd-mascot-b.svg")} alt="" />
         </span>
-        <span>Primeiro contato</span>
+        <span>Fale comigo!</span>
       </button>
 
       {isOpen ? (
         <aside id="legal-chat-panel" className="legal-chat-panel" aria-label="Atendimento inicial BRD">
           <div className="legal-chat-header">
-            <img src={assetPath("assets/brand/brd-mascot-b.svg")} alt="" aria-hidden="true" />
             <div>
               <span>Atendimento inicial</span>
               <strong>BRD Advocacia</strong>
@@ -291,11 +287,11 @@ function LegalContactChat() {
           <div className="legal-chat-messages" aria-live="polite">
             <p>
               Posso registrar seu contato para a equipe entender o assunto e indicar o melhor
-              caminho para uma reuniao inicial.
+              caminho para uma reunião inicial.
             </p>
             <p>
-              Este canal nao substitui consulta juridica, nao analisa documentos e nao antecipa resultado.
-              Evite enviar dados sensiveis por aqui.
+              Este canal não substitui consulta jurídica, não analisa documentos e não antecipa resultado.
+              Evite enviar dados sensíveis por aqui.
             </p>
           </div>
 
@@ -309,7 +305,7 @@ function LegalContactChat() {
               <input name="email" value={form.email} onChange={updateField} required type="email" autoComplete="email" />
             </label>
             <label>
-              Telefone, se preferir retorno por ligacao
+              Telefone, se preferir retorno por ligação
               <input name="phone" value={form.phone} onChange={updateField} type="tel" autoComplete="tel" />
             </label>
             <label>
@@ -329,16 +325,16 @@ function LegalContactChat() {
                 onChange={updateField}
                 required
                 rows="4"
-                placeholder="Descreva o contexto, sem anexar documentos ou dados sensiveis."
+                placeholder="Descreva o contexto, sem anexar documentos ou dados sensíveis."
               />
             </label>
             <label>
-              Melhor periodo para retorno
-              <input name="schedule" value={form.schedule} onChange={updateField} placeholder="Ex.: manha, tarde ou dia especifico" />
+              Melhor período para retorno
+              <input name="schedule" value={form.schedule} onChange={updateField} placeholder="Ex.: manhã, tarde ou dia específico" />
             </label>
 
             <button className="button button-primary" type="submit" disabled={status === "sending"}>
-              {status === "sending" ? "Enviando..." : "Enviar para analise"}
+              {status === "sending" ? "Enviando..." : "Enviar para análise"}
             </button>
             {feedback ? <p className={`legal-chat-feedback ${status}`}>{feedback}</p> : null}
           </form>
@@ -552,7 +548,7 @@ function App() {
             <a className="button button-primary" href="https://www.instagram.com/brd.adv/" target="_blank" rel="noreferrer">
               Abrir Instagram
             </a>
-            <a className="button button-light" href="mailto:contato@brd.adv.br">
+            <a className="button button-light" href={`mailto:${contactEmail}`}>
               Enviar e-mail
             </a>
           </div>
@@ -582,7 +578,7 @@ function App() {
               <span>Como chegar</span>
             </a>
             <a href="tel:+5514998325395">(14) 99832-5395</a>
-            <a href="mailto:contato@brd.adv.br">contato@brd.adv.br</a>
+            <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
           </div>
           <div>
             <span className="footer-kicker">Redes sociais</span>
