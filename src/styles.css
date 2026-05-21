@@ -595,28 +595,70 @@ footer p {
     position: static;
     align-items: flex-start;
     flex-direction: column;
+    gap: 14px;
+    min-height: auto;
+    padding: 18px 20px 14px;
+  }
+
+  .brand img {
+    width: 148px;
   }
 
   nav {
     width: 100%;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: flex-start;
-    gap: 8px;
-    font-size: 0.76rem;
+    gap: 18px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+
+  nav::-webkit-scrollbar {
+    display: none;
   }
 
   nav a {
-    min-height: 44px;
-    padding-right: 10px;
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 6px 0;
   }
 
   .hero {
-    min-height: 72svh;
-    padding-top: 82px;
+    min-height: auto;
+    padding: 58px 20px 34px;
+    background:
+      linear-gradient(180deg, rgba(9, 7, 15, 0.97) 0%, rgba(9, 7, 15, 0.86) 54%, rgba(9, 7, 15, 0.76) 100%),
+      url("/assets/brand/hero-background.jpg") center top / cover;
+  }
+
+  .hero-logo {
+    width: min(224px, 68vw);
+    margin-bottom: 18px;
+  }
+
+  .hero .eyebrow {
+    margin-bottom: 14px;
+    font-size: 0.72rem;
   }
 
   h1 {
-    font-size: clamp(2.85rem, 15vw, 5.4rem);
+    max-width: 10ch;
+    font-size: clamp(2.9rem, 12.2vw, 4.45rem);
+    line-height: 0.94;
+  }
+
+  .hero-lead {
+    max-width: 16rem;
+    margin-top: 22px;
+    font-size: clamp(1.25rem, 5.4vw, 1.65rem);
+    line-height: 1.12;
+  }
+
+  .hero-actions {
+    margin-top: 26px;
   }
 
   .intro-band,
