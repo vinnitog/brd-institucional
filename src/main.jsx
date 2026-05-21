@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles.css";
 
@@ -75,18 +75,33 @@ const insights = [
 ];
 
 function App() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
     <>
       <header className="site-header" aria-label="Navegação principal">
         <a className="brand" href="#inicio" aria-label="BRD Advocacia">
           <img src={assetPath("assets/brand/logo-full-dark.png")} alt="BRD Advocacia" />
         </a>
-        <nav>
-          <a href="#sobre">Sobre</a>
-          <a href="#expertises">Expertises</a>
-          <a href="#equipe">Equipe</a>
-          <a href="#inteligencia">Inteligência</a>
-          <a href="#contato">Contato</a>
+        <button
+          className="menu-toggle"
+          type="button"
+          aria-controls="main-navigation"
+          aria-expanded={isMenuOpen}
+          aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
+          onClick={() => setIsMenuOpen((current) => !current)}
+        >
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+          <span aria-hidden="true" />
+        </button>
+        <nav id="main-navigation" className={isMenuOpen ? "is-open" : ""}>
+          <a href="#sobre" onClick={closeMenu}>Sobre</a>
+          <a href="#expertises" onClick={closeMenu}>Expertises</a>
+          <a href="#equipe" onClick={closeMenu}>Equipe</a>
+          <a href="#inteligencia" onClick={closeMenu}>Inteligência</a>
+          <a href="#contato" onClick={closeMenu}>Contato</a>
         </nav>
       </header>
 
