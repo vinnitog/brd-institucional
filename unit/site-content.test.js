@@ -65,6 +65,9 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /@font-face/);
   assert.match(styles, /hero-background\.jpg/);
   assert.match(styles, /@media \(max-width: 720px\)/);
+  assert.match(styles, /overflow-x: auto/);
+  assert.match(styles, /white-space: nowrap/);
+  assert.match(styles, /font-size: clamp\(2\.9rem, 12\.2vw, 4\.45rem\)/);
   assert.match(styles, /prefers-reduced-motion/);
   assert.match(styles, /\.button:focus-visible/);
   assert.doesNotMatch(styles, /letter-spacing:\s*-/);
