@@ -190,9 +190,12 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /\.legal-chat-toggle-icon img/);
   assert.match(styles, /\.legal-chat-feedback\.sent/);
   assert.match(styles, /\.social-link\s*\{[\s\S]*min-height: 44px/);
-  assert.match(styles, /\.legal-chat\s*\{[\s\S]*position: fixed/);
-  assert.match(styles, /\.legal-chat\s*\{[\s\S]*top: 50%/);
+  assert.match(styles, /\.legal-chat\s*\{[\s\S]*display: contents/);
+  assert.match(styles, /\.legal-chat-toggle\s*\{[\s\S]*position: fixed/);
+  assert.match(styles, /\.legal-chat-toggle\s*\{[\s\S]*top: 50%/);
+  assert.match(styles, /\.legal-chat-toggle\s*\{[\s\S]*right: 0/);
   assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*position: fixed/);
+  assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*right: 0/);
   assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*max-height: min\(620px, calc\(100svh - 48px\)\)/);
   assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*overflow: auto/);
   assert.match(styles, /@keyframes mascotWave/);
@@ -200,7 +203,6 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /\.legal-chat\.is-open \.legal-chat-toggle\s*\{[\s\S]*display: none/);
   assert.match(styles, /\.legal-chat-form input,\s*\.legal-chat-form select,\s*\.legal-chat-form textarea/);
   assert.doesNotMatch(styles, /\.legal-chat-form\s*\{[^}]*overflow: auto/);
-  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat\s*\{[\s\S]*left: auto/);
   assert.doesNotMatch(styles, /\.footer-social a\s*\{[^}]*min-height:\s*auto/);
   assert.match(styles, /\.partners-heading\s*\{[\s\S]*max-width: 980px/);
   assert.doesNotMatch(styles, /\.partners-heading\s*\{[^}]*display:\s*grid/);
@@ -209,9 +211,10 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partners-grid\s*\{[\s\S]*grid-template-columns: 1fr/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-card\s*\{[\s\S]*grid-template-columns: 1fr/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-photo\s*\{[\s\S]*height: auto/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-photo\s*\{[\s\S]*max-width: 260px/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-photo img\s*\{[\s\S]*object-fit: contain/);
-  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat\s*\{[\s\S]*left: auto/);
-  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[\s\S]*top: 50%/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-card\s*\{[\s\S]*max-width: 360px/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[\s\S]*left: auto/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[\s\S]*max-height: min\(620px, calc\(100svh - 64px\)\)/);
   assert.match(styles, /center center \/ cover/);
   assert.match(styles, /font-size: clamp\(3rem, 12vw, 4\.2rem\)/);
