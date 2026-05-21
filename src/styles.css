@@ -751,14 +751,7 @@ h3 {
 }
 
 .legal-chat {
-  position: fixed;
-  right: clamp(12px, 2vw, 22px);
-  top: 50%;
-  bottom: auto;
-  transform: translateY(-50%);
-  z-index: 40;
-  display: grid;
-  justify-items: end;
+  display: contents;
   font-family: "DM Sans", Arial, sans-serif;
 }
 
@@ -767,16 +760,22 @@ h3 {
 }
 
 .legal-chat-toggle {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  z-index: 40;
+  transform: translateY(-50%);
   display: inline-flex;
   min-height: 52px;
   align-items: center;
   gap: 10px;
   border: 1px solid rgba(217, 194, 255, 0.34);
-  border-radius: 8px;
+  border-right: 0;
+  border-radius: 8px 0 0 8px;
   padding: 8px 13px 8px 8px;
   color: white;
   background: #110d17;
-  box-shadow: 0 18px 46px rgba(9, 7, 15, 0.24);
+  box-shadow: -8px 18px 46px rgba(9, 7, 15, 0.28);
   cursor: pointer;
   font-size: 0.86rem;
   font-weight: 900;
@@ -792,8 +791,8 @@ h3 {
 .legal-chat-toggle:hover,
 .legal-chat-toggle:focus-visible {
   border-color: #d9c2ff;
-  box-shadow: 0 22px 54px rgba(9, 7, 15, 0.32);
-  transform: translateY(-2px);
+  box-shadow: -10px 22px 54px rgba(9, 7, 15, 0.34);
+  transform: translateY(-50%) translateX(-2px);
 }
 
 .legal-chat-toggle:focus-visible {
@@ -827,19 +826,20 @@ h3 {
 
 .legal-chat-panel {
   position: fixed;
-  right: clamp(12px, 2vw, 22px);
+  right: 0;
   top: 50%;
-  bottom: auto;
+  z-index: 40;
   transform: translateY(-50%);
   display: flex;
-  width: min(400px, calc(100vw - 32px));
+  width: min(400px, 100vw);
   max-height: min(620px, calc(100svh - 48px));
   overflow: auto;
   flex-direction: column;
   border: 1px solid rgba(217, 194, 255, 0.36);
-  border-radius: 8px;
+  border-right: 0;
+  border-radius: 8px 0 0 8px;
   background: #fbf9ff;
-  box-shadow: 0 26px 76px rgba(9, 7, 15, 0.28);
+  box-shadow: -16px 26px 76px rgba(9, 7, 15, 0.32);
 }
 
 .legal-chat-header {
@@ -1252,10 +1252,19 @@ footer a:focus-visible {
     min-height: auto;
   }
 
+  .partner-card {
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .partner-photo {
     height: auto;
     min-height: 0;
     aspect-ratio: auto;
+    max-width: 260px;
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .partner-photo img {
@@ -1263,31 +1272,16 @@ footer a:focus-visible {
     object-fit: contain;
   }
 
-  .legal-chat {
-    right: 12px;
-    top: 50%;
-    bottom: auto;
-    left: auto;
-    transform: translateY(-50%);
-    max-width: calc(100vw - 24px);
-    justify-items: end;
-  }
-
   .legal-chat-toggle {
-    width: auto;
     max-width: 100%;
     justify-content: flex-end;
     padding-right: 12px;
   }
 
   .legal-chat-panel {
-    position: fixed;
-    right: 12px;
-    top: 50%;
-    bottom: auto;
-    left: 12px;
-    width: auto;
-    transform: translateY(-50%);
+    right: 0;
+    left: auto;
+    width: min(380px, 100vw);
     max-height: min(620px, calc(100svh - 64px));
   }
 
