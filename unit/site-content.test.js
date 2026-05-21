@@ -18,6 +18,10 @@ test("site entrypoints and brand documentation exist", () => {
     "public/assets/brand/logo-full-dark.png",
     "public/assets/brand/logo-full-light.png",
     "public/assets/brand/hero-background.jpg",
+    "public/assets/brand/partners/luis.jpg",
+    "public/assets/brand/partners/leticia.jpg",
+    "public/assets/brand/partners/andre.jpg",
+    "public/assets/brand/partners/fernanda.jpg",
   ]) {
     assert.ok(fs.existsSync(path.join(root, file)), `${file} should exist`);
   }
@@ -51,7 +55,7 @@ test("homepage contains the core BRD institutional content", () => {
     "Luís Bernardo Júnior",
     "Letícia Barriento",
     "André Luis",
-    "Fernanda",
+    "Fernanda Félix",
     "Rua Sete de Setembro",
     "Marília/SP",
     "17502-020",
@@ -65,6 +69,13 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /id="main-navigation"/);
   assert.match(app, /href="#socios"/);
   assert.match(app, /id="socios"/);
+  assert.match(app, /href="#sobre"[\s\S]*href="#socios"[\s\S]*href="#expertises"/);
+  assert.match(app, /assets\/brand\/partners\/luis\.jpg/);
+  assert.match(app, /assets\/brand\/partners\/leticia\.jpg/);
+  assert.match(app, /assets\/brand\/partners\/andre\.jpg/);
+  assert.match(app, /assets\/brand\/partners\/fernanda\.jpg/);
+  assert.match(app, /alt=\{`Foto de \$\{partner\.name\}`\}/);
+  assert.match(app, /loading="lazy"/);
   assert.doesNotMatch(app, /href="#equipe"|id="equipe"/);
   assert.match(app, /https:\/\/www\.instagram\.com\/brd\.adv\//);
   assert.match(app, /linkedin\.com\/company\/bernardo-advogados-associados-brd/);
@@ -109,6 +120,9 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /nav\.is-open/);
   assert.match(styles, /\.partners-grid/);
   assert.match(styles, /\.partner-card/);
+  assert.match(styles, /\.partner-photo/);
+  assert.match(styles, /object-fit: cover/);
+  assert.match(styles, /object-position: center top/);
   assert.match(styles, /\.footer-grid/);
   assert.match(styles, /\.footer-social/);
   assert.match(styles, /\.site-header nav/);
@@ -143,6 +157,10 @@ test("brand assets stay web friendly and chart stays lightweight", () => {
     "public/assets/brand/logo-full-dark.png": 140_000,
     "public/assets/brand/logo-full-light.png": 140_000,
     "public/assets/brand/icon-purple.png": 80_000,
+    "public/assets/brand/partners/luis.jpg": 80_000,
+    "public/assets/brand/partners/leticia.jpg": 80_000,
+    "public/assets/brand/partners/andre.jpg": 80_000,
+    "public/assets/brand/partners/fernanda.jpg": 80_000,
   };
 
   for (const [file, maxBytes] of Object.entries(maxBytesByAsset)) {

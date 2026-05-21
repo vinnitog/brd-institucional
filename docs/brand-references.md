@@ -24,6 +24,7 @@ Documento de acompanhamento criado durante o desenvolvimento do site institucion
 - `public/assets/brand/icon-purple.png`: ícone institucional roxo.
 - `public/assets/brand/hero-background.jpg`: wallpaper com lema e atmosfera visual da marca.
 - `public/assets/brand/avatar.png`: avatar social oficial.
+- `public/assets/brand/partners/*.jpg`: fotos otimizadas dos sócios a partir de `Instagram\sócios`.
 - `public/fonts/DMSans-VariableFont_opsz,wght.ttf`: fonte principal.
 - `public/fonts/Gupter-Regular.ttf`, `Gupter-Medium.ttf`, `Gupter-Bold.ttf`: fonte editorial.
 
@@ -66,7 +67,7 @@ Aplicação no BRD:
 
 - A assinatura visual do site passou a priorizar `BRD adv.` em vez da versão "Bernardo Advogados Associados", reforçando o escritório como banca coletiva de sócios.
 - A navegação passou a usar "Expertises", "Sócios" e "Inteligência", em linha com a arquitetura institucional de grandes escritórios.
-- Foi adicionada uma seção de sócios com perfis sóbrios baseados nas referências locais disponíveis: Luís Bernardo Júnior, Letícia Barriento, André Luis e Fernanda.
+- Foi adicionada uma seção de sócios com perfis sóbrios baseados nas referências locais disponíveis: Luís Bernardo Júnior, Letícia Barriento, André Luis e Fernanda Félix.
 - Foi adicionada uma seção de inteligência jurídica inspirada nos hubs editoriais das referências, mas em formato inicial, sem simular publicações ou prêmios inexistentes.
 - O rodapé passou a concentrar localização, rota no Google Maps, telefone, e-mail e redes sociais oficiais.
 - Ajuste posterior em 2026-05-21: Maria foi removida da seção de sócios, o hero mobile foi reposicionado para reduzir a sensação de vazio, a seção de sócios voltou para alinhamento à esquerda e o rodapé recebeu ícones minimalistas para rota e redes sociais.
