@@ -90,7 +90,7 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /google\.com\/maps\/search/);
   assert.match(app, /tel:\+5514998325395/);
   assert.match(app, /mailto:\$\{contactEmail\}/);
-  assert.match(app, /contactEmail = "vinnitog@gmail\.com"/);
+  assert.match(app, /contactEmail = "contato@brd\.adv\.br"/);
   assert.match(app, /function MapPinIcon/);
   assert.match(app, /function SocialIcon/);
   assert.match(app, /icon: "instagram"/);
