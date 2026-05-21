@@ -24,7 +24,7 @@ Documento de acompanhamento criado durante o desenvolvimento do site institucion
 - `public/assets/brand/icon-purple.png`: ícone institucional roxo.
 - `public/assets/brand/hero-background.jpg`: wallpaper com lema e atmosfera visual da marca.
 - `public/assets/brand/avatar.png`: avatar social oficial.
-- `public/assets/brand/partners/*.png`: fotos recortadas dos sócios a partir de `Instagram\sócios`.
+- `public/assets/brand/partners/*.jpg`: fotos otimizadas dos sócios a partir de `Instagram\sócios`.
 - `public/fonts/DMSans-VariableFont_opsz,wght.ttf`: fonte principal.
 - `public/fonts/Gupter-Regular.ttf`, `Gupter-Medium.ttf`, `Gupter-Bold.ttf`: fonte editorial.
 
