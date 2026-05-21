@@ -817,7 +817,7 @@ h3 {
   display: flex;
   width: min(420px, calc(100vw - 32px));
   max-height: calc(100svh - 128px);
-  overflow: hidden;
+  overflow: auto;
   flex-direction: column;
   border: 1px solid rgba(217, 194, 255, 0.36);
   border-radius: 8px;
@@ -884,7 +884,6 @@ h3 {
 .legal-chat-form {
   display: grid;
   gap: 11px;
-  overflow: auto;
   padding: 14px;
 }
 
@@ -1237,26 +1236,32 @@ footer a:focus-visible {
   }
 
   .partner-photo {
-    min-height: 280px;
+    height: clamp(190px, 58vw, 240px);
+    min-height: 0;
   }
 
   .legal-chat {
-    right: 12px;
-    bottom: 12px;
-    left: 12px;
-    justify-items: stretch;
+    right: 14px;
+    bottom: 16px;
+    left: auto;
+    max-width: calc(100vw - 28px);
+    justify-items: end;
   }
 
   .legal-chat-toggle {
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    max-width: 100%;
+    justify-content: flex-end;
+    padding-right: 13px;
   }
 
   .legal-chat-panel {
-    right: 0;
-    left: 0;
-    width: 100%;
-    max-height: calc(100svh - 106px);
+    position: fixed;
+    right: 12px;
+    bottom: 84px;
+    left: 12px;
+    width: auto;
+    max-height: min(620px, calc(100svh - 108px));
   }
 
   .button {
