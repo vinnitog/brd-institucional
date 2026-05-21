@@ -61,6 +61,15 @@ img {
   max-width: 100%;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -229,11 +238,6 @@ nav a:focus-visible {
   animation: fadeUp 680ms ease 120ms both;
 }
 
-.hero-logo {
-  width: min(290px, 62vw);
-  margin-bottom: 28px;
-}
-
 .eyebrow {
   margin: 0 0 16px;
   color: var(--purple-text);
@@ -273,14 +277,6 @@ h3 {
   margin: 0;
   font-size: clamp(1.15rem, 1.8vw, 1.55rem);
   line-height: 1.1;
-}
-
-.hero-lead {
-  max-width: 760px;
-  margin: 22px 0 0;
-  font-size: clamp(1.35rem, 3vw, 3.05rem);
-  font-weight: 650;
-  line-height: 1.05;
 }
 
 .hero-actions,
@@ -407,25 +403,45 @@ h3 {
   margin: 0 0 20px;
 }
 
-.team {
-  padding-top: 0;
+.partners {
+  background: white;
 }
 
-.team-panel {
+.partners-heading {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 0.65fr);
-  gap: clamp(28px, 5vw, 72px);
+  grid-template-columns: minmax(0, 0.85fr) minmax(300px, 0.52fr);
+  gap: clamp(24px, 5vw, 72px);
   align-items: end;
-  padding: clamp(34px, 6vw, 70px);
-  color: white;
-  background:
-    linear-gradient(90deg, rgba(9, 7, 15, 0.92), rgba(9, 7, 15, 0.72)),
-    url("/assets/brand/hero-background.jpg") center / cover;
-  border-radius: 8px;
 }
 
-.team-panel h2 {
-  max-width: 900px;
+.partners-heading p:last-child {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.6vw, 1.18rem);
+}
+
+.partners-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.36fr) minmax(0, 1fr);
+  gap: clamp(22px, 4vw, 42px);
+}
+
+.partners-intro {
+  position: sticky;
+  top: 112px;
+  align-self: start;
+  display: grid;
+  gap: 18px;
+  padding: clamp(24px, 3vw, 34px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(9, 7, 15, 0.05) 1px, transparent 1px) 0 0 / 34px 34px,
+    #f7f3fb;
+}
+
+.partners-intro img {
+  width: 72px;
 }
 
 .team-list {
@@ -438,10 +454,71 @@ h3 {
 }
 
 .team-list li {
-  padding: 22px;
-  background: rgba(9, 7, 15, 0.74);
-  color: #eee8f5;
+  padding: 18px;
+  background: white;
+  color: #332b3c;
   font-weight: 850;
+}
+
+.partners-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.partner-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 18px;
+  min-height: 260px;
+  padding: clamp(22px, 3vw, 34px);
+  background: rgba(255, 255, 255, 0.94);
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.partner-card:hover {
+  background: #fbf9ff;
+  box-shadow: 0 18px 42px rgba(9, 7, 15, 0.08);
+  transform: translateY(-4px);
+}
+
+.partner-card:first-child {
+  grid-column: 1 / -1;
+  min-height: 220px;
+  background:
+    linear-gradient(90deg, rgba(150, 74, 251, 0.08), rgba(255, 255, 255, 0.94)),
+    white;
+}
+
+.partner-initial {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border: 1px solid rgba(150, 74, 251, 0.26);
+  border-radius: 50%;
+  color: var(--purple-text);
+  background: #f3ecff;
+  font-family: "Gupter", Georgia, serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.partner-card span {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--purple-text);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.partner-card p {
+  margin: 16px 0;
+  color: #3f3948;
 }
 
 .section-heading {
@@ -672,22 +749,83 @@ h3 {
 }
 
 footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 28px clamp(20px, 5vw, 86px);
+  display: grid;
+  grid-template-columns: minmax(220px, 0.44fr) minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+  padding: clamp(34px, 5vw, 58px) clamp(20px, 5vw, 86px);
   color: #4a4452;
   background: var(--paper);
+  border-top: 1px solid var(--line);
 }
 
 footer img {
   width: 172px;
 }
 
-footer p {
+.footer-brand p {
+  max-width: 360px;
   margin: 0;
+  color: var(--muted);
   font-weight: 750;
+}
+
+.footer-brand {
+  display: grid;
+  gap: 18px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 4vw, 44px);
+}
+
+footer address,
+.footer-grid div {
+  display: grid;
+  gap: 8px;
+  font-style: normal;
+}
+
+footer span {
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+footer a {
+  width: fit-content;
+  color: #4a4452;
+  font-weight: 750;
+  transition: color 180ms ease, transform 180ms ease;
+}
+
+footer a:hover,
+footer a:focus-visible {
+  color: var(--purple-text);
+  transform: translateX(2px);
+}
+
+footer a:focus-visible {
+  outline: 3px solid #d9c2ff;
+  outline-offset: 3px;
+}
+
+.footer-social {
+  display: grid;
+  gap: 8px;
+  color: inherit;
+  font-size: 1rem;
+  font-weight: 750;
+  text-transform: none;
+}
+
+.footer-social a {
+  min-height: auto;
+  padding: 0;
+  border-bottom: 0;
 }
 
 @media (max-width: 1040px) {
@@ -699,12 +837,19 @@ footer p {
   .method-layout,
   .identity,
   .contact,
-  .team-panel {
+  .partners-heading,
+  .partners-layout,
+  footer {
     grid-template-columns: 1fr;
   }
 
-  .insights-grid {
+  .insights-grid,
+  .footer-grid {
     grid-template-columns: 1fr;
+  }
+
+  .partners-intro {
+    position: static;
   }
 
   .contact-actions {
@@ -785,27 +930,10 @@ footer p {
       linear-gradient(180deg, rgba(9, 7, 15, 0.1), rgba(9, 7, 15, 0.46));
   }
 
-  .hero-logo {
-    width: min(224px, 68vw);
-    margin-bottom: 18px;
-  }
-
-  .hero .eyebrow {
-    margin-bottom: 14px;
-    font-size: 0.72rem;
-  }
-
   h1 {
     max-width: 9.8ch;
     font-size: clamp(3rem, 12vw, 4.2rem);
     line-height: 0.96;
-  }
-
-  .hero-lead {
-    max-width: 17.5rem;
-    margin-top: 22px;
-    font-size: clamp(1.25rem, 5.4vw, 1.65rem);
-    line-height: 1.14;
   }
 
   .hero-actions {
@@ -826,8 +954,13 @@ footer p {
     margin-bottom: 26px;
   }
 
-  .team-panel {
-    padding: 26px;
+  .partners-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .partner-card {
+    grid-template-columns: 1fr;
+    min-height: auto;
   }
 
   .button {
@@ -849,7 +982,6 @@ footer p {
 
   footer {
     align-items: flex-start;
-    flex-direction: column;
   }
 }
 

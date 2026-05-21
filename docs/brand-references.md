@@ -27,6 +27,13 @@ Documento de acompanhamento criado durante o desenvolvimento do site institucion
 - `public/fonts/DMSans-VariableFont_opsz,wght.ttf`: fonte principal.
 - `public/fonts/Gupter-Regular.ttf`, `Gupter-Medium.ttf`, `Gupter-Bold.ttf`: fonte editorial.
 
+## Dados De Contato E Presença Digital
+
+- Localização extraída de `localizacao-google-info-card.png`: Rua Sete de Setembro, n.° 1359, Senador Salgado Filho, Marília/SP, 17502-020.
+- Telefone extraído de `localizacao-google-info-card.png`: (14) 99832-5395.
+- Redes sociais informadas pelo usuário em 2026-05-21: Instagram, LinkedIn, YouTube e Facebook oficiais do BRD.
+- E-mail `contato@brd.adv.br` aplicado como canal institucional inicial e deve ser confirmado antes de publicação definitiva.
+
 ## Conteúdo Institucional Extraído Das Referências
 
 As imagens do Instagram e dos materiais de identidade indicam foco empresarial e consultivo, com os seguintes serviços:
@@ -42,7 +49,7 @@ As imagens do Instagram e dos materiais de identidade indicam foco empresarial e
 
 ## Direcao Aplicada Ao Site
 
-- Primeira dobra com marca e lema como sinal dominante, usando imagem oficial como fundo.
+- Primeira dobra com a marca no topo e imagem oficial como fundo, evitando repetição visual da assinatura e do lema. O lema permanece no HTML apenas como texto acessível para leitores de tela.
 - Tom verbal sóbrio, empresarial e direto, evitando promessas exageradas.
 - Estrutura pensada para conversão institucional: sobre, atuação, método e contato.
 - Interface responsiva com hierarquia editorial forte, grid limpo, cards de atuação e uma leitura de "inteligência aplicada" feita em CSS acessível.
@@ -58,6 +65,7 @@ Referências consultadas em 2026-05-21:
 Aplicação no BRD:
 
 - A assinatura visual do site passou a priorizar `BRD adv.` em vez da versão "Bernardo Advogados Associados", reforçando o escritório como banca coletiva de sócios.
-- A navegação passou a usar "Expertises", "Equipe" e "Inteligência", em linha com a arquitetura institucional de grandes escritórios.
-- Foi adicionada uma seção de time para explicar que Luís Bernardo idealizou o escritório, mas a atuação é feita com os demais sócios.
+- A navegação passou a usar "Expertises", "Sócios" e "Inteligência", em linha com a arquitetura institucional de grandes escritórios.
+- Foi adicionada uma seção de sócios com perfis sóbrios baseados nas referências locais disponíveis: Luís Bernardo Júnior, Letícia Barriento, André Luis, Fernanda e Maria.
 - Foi adicionada uma seção de inteligência jurídica inspirada nos hubs editoriais das referências, mas em formato inicial, sem simular publicações ou prêmios inexistentes.
+- O rodapé passou a concentrar localização, rota no Google Maps, telefone, e-mail e redes sociais oficiais.
