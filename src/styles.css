@@ -468,11 +468,12 @@ h3 {
 
 .partner-card {
   display: grid;
-  grid-template-columns: minmax(112px, 0.34fr) minmax(0, 1fr);
-  gap: clamp(18px, 2vw, 24px);
+  grid-template-columns: minmax(136px, 0.38fr) minmax(0, 1fr);
+  gap: 0;
   align-items: stretch;
   min-height: 260px;
-  padding: clamp(18px, 2.4vw, 28px);
+  overflow: hidden;
+  padding: 0;
   background: rgba(255, 255, 255, 0.94);
   transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
@@ -489,37 +490,44 @@ h3 {
     white;
 }
 
+.partner-card > div:last-child {
+  align-self: center;
+  padding: clamp(22px, 3vw, 34px);
+}
+
 .partner-photo {
   position: relative;
   overflow: hidden;
   align-self: stretch;
-  min-height: 190px;
-  border-radius: 8px;
+  display: grid;
+  min-height: 230px;
+  place-items: end center;
   background:
-    linear-gradient(180deg, rgba(150, 74, 251, 0.08), rgba(9, 7, 15, 0.04)),
-    #f3ecff;
+    linear-gradient(180deg, rgba(150, 74, 251, 0.12), rgba(255, 255, 255, 0.82)),
+    linear-gradient(90deg, rgba(9, 7, 15, 0.04) 1px, transparent 1px) 0 0 / 28px 28px,
+    #f7f3fb;
 }
 
 .partner-photo::after {
   content: "";
   position: absolute;
   inset: 0;
-  border: 1px solid rgba(150, 74, 251, 0.22);
-  border-radius: inherit;
+  border-right: 1px solid rgba(150, 74, 251, 0.16);
   pointer-events: none;
 }
 
 .partner-photo img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center top;
-  filter: saturate(0.92) contrast(1.02);
+  padding: 10px 8px 0;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: saturate(0.94) contrast(1.02) drop-shadow(0 16px 26px rgba(9, 7, 15, 0.12));
   transition: filter 180ms ease, transform 180ms ease;
 }
 
 .partner-card:hover .partner-photo img {
-  filter: saturate(1) contrast(1.04);
+  filter: saturate(1) contrast(1.04) drop-shadow(0 18px 30px rgba(9, 7, 15, 0.16));
   transform: scale(1.02);
 }
 
@@ -748,6 +756,215 @@ h3 {
 .identity p {
   max-width: 760px;
   font-size: clamp(1.05rem, 1.8vw, 1.28rem);
+}
+
+.legal-chat {
+  position: fixed;
+  right: clamp(16px, 3vw, 34px);
+  bottom: clamp(16px, 3vw, 34px);
+  z-index: 40;
+  display: grid;
+  justify-items: end;
+  font-family: "DM Sans", Arial, sans-serif;
+}
+
+.legal-chat-toggle {
+  display: inline-flex;
+  min-height: 58px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(217, 194, 255, 0.34);
+  border-radius: 8px;
+  padding: 10px 15px 10px 10px;
+  color: white;
+  background: #110d17;
+  box-shadow: 0 18px 46px rgba(9, 7, 15, 0.24);
+  cursor: pointer;
+  font-weight: 900;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.legal-chat-toggle:hover,
+.legal-chat-toggle:focus-visible {
+  border-color: #d9c2ff;
+  box-shadow: 0 22px 54px rgba(9, 7, 15, 0.32);
+  transform: translateY(-2px);
+}
+
+.legal-chat-toggle:focus-visible {
+  outline: 3px solid #d9c2ff;
+  outline-offset: 3px;
+}
+
+.legal-chat-toggle:hover {
+  outline: none;
+}
+
+.legal-chat-toggle-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 8px;
+  color: white;
+  background: var(--purple);
+}
+
+.legal-chat-toggle-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.legal-chat-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 14px);
+  display: flex;
+  width: min(420px, calc(100vw - 32px));
+  max-height: calc(100svh - 128px);
+  overflow: hidden;
+  flex-direction: column;
+  border: 1px solid rgba(217, 194, 255, 0.36);
+  border-radius: 8px;
+  background: #fbf9ff;
+  box-shadow: 0 26px 76px rgba(9, 7, 15, 0.28);
+}
+
+.legal-chat-header {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  color: white;
+  background:
+    linear-gradient(90deg, rgba(217, 194, 255, 0.08) 1px, transparent 1px) 0 0 / 28px 28px,
+    #110d17;
+}
+
+.legal-chat-header img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.legal-chat-header span {
+  display: block;
+  color: #d9c2ff;
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.legal-chat-header strong {
+  display: block;
+  font-size: 1.02rem;
+  line-height: 1.15;
+}
+
+.legal-chat-header button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.legal-chat-messages {
+  display: grid;
+  gap: 8px;
+  padding: 14px 14px 0;
+}
+
+.legal-chat-messages p {
+  margin: 0;
+  border-radius: 8px;
+  padding: 12px;
+  color: #332b3c;
+  background: white;
+  box-shadow: 0 10px 24px rgba(9, 7, 15, 0.06);
+  font-size: 0.92rem;
+}
+
+.legal-chat-form {
+  display: grid;
+  gap: 11px;
+  overflow: auto;
+  padding: 14px;
+}
+
+.legal-chat-form label {
+  display: grid;
+  gap: 6px;
+  color: #332b3c;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.legal-chat-form input,
+.legal-chat-form select,
+.legal-chat-form textarea {
+  width: 100%;
+  border: 1px solid #d6cde2;
+  border-radius: 8px;
+  padding: 11px 12px;
+  color: var(--ink);
+  background: white;
+  font: inherit;
+  font-size: 0.95rem;
+}
+
+.legal-chat-form textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
+.legal-chat-form input:focus,
+.legal-chat-form select:focus,
+.legal-chat-form textarea:focus {
+  border-color: var(--purple);
+  outline: 3px solid #eadcff;
+}
+
+.legal-chat-form .button {
+  width: 100%;
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+.legal-chat-form .button:disabled {
+  cursor: wait;
+  opacity: 0.74;
+  transform: none;
+}
+
+.legal-chat-feedback {
+  margin: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.legal-chat-feedback.sent {
+  color: #12351f;
+  background: #dff6e7;
+}
+
+.legal-chat-feedback.error {
+  color: #541f1f;
+  background: #ffe3e3;
 }
 
 .contact {
@@ -1035,8 +1252,36 @@ footer a:focus-visible {
     min-height: auto;
   }
 
+  .partner-card > div:last-child {
+    padding: 24px;
+  }
+
   .partner-photo {
-    min-height: 280px;
+    min-height: 300px;
+  }
+
+  .partner-photo::after {
+    border-right: 0;
+    border-bottom: 1px solid rgba(150, 74, 251, 0.16);
+  }
+
+  .legal-chat {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    justify-items: stretch;
+  }
+
+  .legal-chat-toggle {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .legal-chat-panel {
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-height: calc(100svh - 106px);
   }
 
   .button {
