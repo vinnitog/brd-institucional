@@ -121,7 +121,7 @@ a {
   height: auto;
 }
 
-nav {
+.site-header nav {
   display: flex;
   align-items: center;
   gap: clamp(10px, 1.7vw, 24px);
@@ -131,7 +131,7 @@ nav {
   text-transform: uppercase;
 }
 
-nav a {
+.site-header nav a {
   display: inline-flex;
   min-height: 44px;
   align-items: center;
@@ -140,8 +140,8 @@ nav a {
   transition: border-color 180ms ease, color 180ms ease;
 }
 
-nav a:hover,
-nav a:focus-visible {
+.site-header nav a:hover,
+.site-header nav a:focus-visible {
   border-color: var(--purple);
   color: white;
   outline: none;
@@ -408,14 +408,12 @@ h3 {
 }
 
 .partners-heading {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(300px, 0.52fr);
-  gap: clamp(24px, 5vw, 72px);
-  align-items: end;
+  max-width: 980px;
 }
 
 .partners-heading p:last-child {
-  margin: 0;
+  max-width: 680px;
+  margin: 22px 0 0;
   color: var(--muted);
   font-size: clamp(1rem, 1.6vw, 1.18rem);
 }
@@ -485,8 +483,6 @@ h3 {
 }
 
 .partner-card:first-child {
-  grid-column: 1 / -1;
-  min-height: 220px;
   background:
     linear-gradient(90deg, rgba(150, 74, 251, 0.08), rgba(255, 255, 255, 0.94)),
     white;
@@ -788,7 +784,7 @@ footer address,
   font-style: normal;
 }
 
-footer span {
+.footer-kicker {
   color: var(--ink);
   font-size: 0.78rem;
   font-weight: 900;
@@ -814,17 +810,73 @@ footer a:focus-visible {
 }
 
 .footer-social {
-  display: grid;
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   color: inherit;
   font-size: 1rem;
   font-weight: 750;
   text-transform: none;
 }
 
+.footer-route,
+.social-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.footer-route {
+  gap: 9px;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.footer-route svg {
+  width: 21px;
+  height: 21px;
+  color: var(--purple);
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.social-link {
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 10px 0 0;
+}
+
+.social-link svg,
+.social-link > span[aria-hidden="true"] {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(150, 74, 251, 0.28);
+  border-radius: 50%;
+  color: var(--purple-text);
+  background: #f3ecff;
+}
+
+.social-link svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+  padding: 7px;
+}
+
+.social-link > span[aria-hidden="true"] {
+  font-size: 0.92rem;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: none;
+}
+
 .footer-social a {
-  min-height: auto;
-  padding: 0;
   border-bottom: 0;
 }
 
@@ -837,7 +889,6 @@ footer a:focus-visible {
   .method-layout,
   .identity,
   .contact,
-  .partners-heading,
   .partners-layout,
   footer {
     grid-template-columns: 1fr;
@@ -878,7 +929,7 @@ footer a:focus-visible {
     display: inline-flex;
   }
 
-  nav {
+  .site-header nav {
     position: fixed;
     top: 86px;
     right: 16px;
@@ -898,30 +949,31 @@ footer a:focus-visible {
     transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
   }
 
-  nav.is-open {
+  .site-header nav.is-open {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
     visibility: visible;
   }
 
-  nav a {
+  .site-header nav a {
     min-height: 50px;
     justify-content: space-between;
     padding: 0 12px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.09);
   }
 
-  nav a:last-child {
+  .site-header nav a:last-child {
     border-bottom: 0;
   }
 
   .hero {
-    min-height: calc(100svh - 76px);
-    padding: 64px 20px 38px;
+    align-items: center;
+    min-height: min(700px, calc(90svh - 76px));
+    padding: 42px 20px 34px;
     background:
       linear-gradient(180deg, rgba(9, 7, 15, 0.985) 0%, rgba(9, 7, 15, 0.93) 54%, rgba(9, 7, 15, 0.88) 100%),
-      url("/assets/brand/hero-background.jpg") left center / cover;
+      url("/assets/brand/hero-background.jpg") center center / cover;
   }
 
   .hero::before {
@@ -982,6 +1034,16 @@ footer a:focus-visible {
 
   footer {
     align-items: flex-start;
+  }
+
+  .footer-social {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .social-link {
+    width: 100%;
   }
 }
 

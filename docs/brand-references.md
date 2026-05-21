@@ -66,6 +66,7 @@ Aplicação no BRD:
 
 - A assinatura visual do site passou a priorizar `BRD adv.` em vez da versão "Bernardo Advogados Associados", reforçando o escritório como banca coletiva de sócios.
 - A navegação passou a usar "Expertises", "Sócios" e "Inteligência", em linha com a arquitetura institucional de grandes escritórios.
-- Foi adicionada uma seção de sócios com perfis sóbrios baseados nas referências locais disponíveis: Luís Bernardo Júnior, Letícia Barriento, André Luis, Fernanda e Maria.
+- Foi adicionada uma seção de sócios com perfis sóbrios baseados nas referências locais disponíveis: Luís Bernardo Júnior, Letícia Barriento, André Luis e Fernanda.
 - Foi adicionada uma seção de inteligência jurídica inspirada nos hubs editoriais das referências, mas em formato inicial, sem simular publicações ou prêmios inexistentes.
 - O rodapé passou a concentrar localização, rota no Google Maps, telefone, e-mail e redes sociais oficiais.
+- Ajuste posterior em 2026-05-21: Maria foi removida da seção de sócios, o hero mobile foi reposicionado para reduzir a sensação de vazio, a seção de sócios voltou para alinhamento à esquerda e o rodapé recebeu ícones minimalistas para rota e redes sociais.
