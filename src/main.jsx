@@ -64,21 +64,25 @@ const partners = [
     name: "Luís Bernardo Júnior",
     role: "Sócio fundador",
     focus: "Estratégia empresarial, governança e condução institucional do escritório.",
+    image: "assets/brand/partners/luis.jpg",
   },
   {
     name: "Letícia Barriento",
     role: "Sócia",
     focus: "Comunicação institucional, inteligência jurídica e atuação consultiva.",
+    image: "assets/brand/partners/leticia.jpg",
   },
   {
     name: "André Luis",
     role: "Sócio",
     focus: "Atuação empresarial com presença próxima e leitura prática dos desafios do cliente.",
+    image: "assets/brand/partners/andre.jpg",
   },
   {
-    name: "Fernanda",
+    name: "Fernanda Félix",
     role: "Sócia",
     focus: "Apoio estratégico em demandas consultivas, preventivas e de rotina empresarial.",
+    image: "assets/brand/partners/fernanda.jpg",
   },
 ];
 
@@ -248,8 +252,8 @@ function App() {
             <div className="partners-grid">
               {partners.map((partner) => (
                 <article className="partner-card" key={partner.name}>
-                  <div className="partner-initial" aria-hidden="true">
-                    {partner.name.slice(0, 1)}
+                  <div className="partner-photo">
+                    <img src={assetPath(partner.image)} alt={`Foto de ${partner.name}`} loading="lazy" />
                   </div>
                   <div>
                     <span>{partner.role}</span>
