@@ -794,22 +794,20 @@ h3 {
 
 .legal-chat-toggle-icon {
   display: grid;
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   place-items: center;
   border-radius: 8px;
   color: white;
-  background: var(--purple);
+  background:
+    linear-gradient(90deg, rgba(217, 194, 255, 0.1) 1px, transparent 1px) 0 0 / 14px 14px,
+    #21152d;
 }
 
-.legal-chat-toggle-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 1.8;
+.legal-chat-toggle-icon img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
 }
 
 .legal-chat-panel {
@@ -829,7 +827,7 @@ h3 {
 
 .legal-chat-header {
   display: grid;
-  grid-template-columns: 48px 1fr auto;
+  grid-template-columns: 1fr auto;
   gap: 12px;
   align-items: center;
   padding: 14px;
@@ -837,12 +835,6 @@ h3 {
   background:
     linear-gradient(90deg, rgba(217, 194, 255, 0.08) 1px, transparent 1px) 0 0 / 28px 28px,
     #110d17;
-}
-
-.legal-chat-header img {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
 }
 
 .legal-chat-header span {
