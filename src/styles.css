@@ -468,10 +468,11 @@ h3 {
 
 .partner-card {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: minmax(112px, 0.34fr) minmax(0, 1fr);
+  gap: clamp(18px, 2vw, 24px);
+  align-items: stretch;
   min-height: 260px;
-  padding: clamp(22px, 3vw, 34px);
+  padding: clamp(18px, 2.4vw, 28px);
   background: rgba(255, 255, 255, 0.94);
   transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
@@ -488,19 +489,38 @@ h3 {
     white;
 }
 
-.partner-initial {
-  display: grid;
-  width: 54px;
-  height: 54px;
-  place-items: center;
-  border: 1px solid rgba(150, 74, 251, 0.26);
-  border-radius: 50%;
-  color: var(--purple-text);
-  background: #f3ecff;
-  font-family: "Gupter", Georgia, serif;
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1;
+.partner-photo {
+  position: relative;
+  overflow: hidden;
+  align-self: stretch;
+  min-height: 190px;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(150, 74, 251, 0.08), rgba(9, 7, 15, 0.04)),
+    #f3ecff;
+}
+
+.partner-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(150, 74, 251, 0.22);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.partner-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  filter: saturate(0.92) contrast(1.02);
+  transition: filter 180ms ease, transform 180ms ease;
+}
+
+.partner-card:hover .partner-photo img {
+  filter: saturate(1) contrast(1.04);
+  transform: scale(1.02);
 }
 
 .partner-card span {
@@ -1013,6 +1033,10 @@ footer a:focus-visible {
   .partner-card {
     grid-template-columns: 1fr;
     min-height: auto;
+  }
+
+  .partner-photo {
+    min-height: 280px;
   }
 
   .button {
