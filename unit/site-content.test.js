@@ -17,11 +17,12 @@ test("site entrypoints and brand documentation exist", () => {
     "docs/brand-references.md",
     "public/assets/brand/logo-full-dark.png",
     "public/assets/brand/logo-full-light.png",
+    "public/assets/brand/brd-mascot-b.svg",
     "public/assets/brand/hero-background.jpg",
-    "public/assets/brand/partners/luis.jpg",
-    "public/assets/brand/partners/leticia.jpg",
-    "public/assets/brand/partners/andre.jpg",
-    "public/assets/brand/partners/fernanda.jpg",
+    "public/assets/brand/partners/luis.png",
+    "public/assets/brand/partners/leticia.png",
+    "public/assets/brand/partners/andre.png",
+    "public/assets/brand/partners/fernanda.png",
   ]) {
     assert.ok(fs.existsSync(path.join(root, file)), `${file} should exist`);
   }
@@ -33,6 +34,9 @@ test("brand references capture the official identity signals", () => {
   assert.match(references, /Guiados pela tradição\. Impulsionados pela inovação\./);
   assert.match(references, /DM Sans/);
   assert.match(references, /Gupter/);
+  assert.match(references, /Mascote BRD/);
+  assert.match(references, /brd-mascot-b\.svg/);
+  assert.match(references, /futuro chatbot/);
   assert.match(references, /C:\\Users\\Togszera\\Desktop\\BRD-identidade-visual/);
   assert.match(references, /Maria foi removida da seção de sócios/);
 });
@@ -60,6 +64,8 @@ test("homepage contains the core BRD institutional content", () => {
     "Marília/SP",
     "17502-020",
     "Redes sociais",
+    "Primeiro contato",
+    "Atendimento inicial",
   ]) {
     assert.match(app, new RegExp(term));
   }
@@ -70,10 +76,10 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /href="#socios"/);
   assert.match(app, /id="socios"/);
   assert.match(app, /href="#sobre"[\s\S]*href="#socios"[\s\S]*href="#expertises"/);
-  assert.match(app, /assets\/brand\/partners\/luis\.jpg/);
-  assert.match(app, /assets\/brand\/partners\/leticia\.jpg/);
-  assert.match(app, /assets\/brand\/partners\/andre\.jpg/);
-  assert.match(app, /assets\/brand\/partners\/fernanda\.jpg/);
+  assert.match(app, /assets\/brand\/partners\/luis\.png/);
+  assert.match(app, /assets\/brand\/partners\/leticia\.png/);
+  assert.match(app, /assets\/brand\/partners\/andre\.png/);
+  assert.match(app, /assets\/brand\/partners\/fernanda\.png/);
   assert.match(app, /alt=\{`Foto de \$\{partner\.name\}`\}/);
   assert.match(app, /loading="lazy"/);
   assert.doesNotMatch(app, /href="#equipe"|id="equipe"/);
@@ -84,6 +90,7 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /google\.com\/maps\/search/);
   assert.match(app, /tel:\+5514998325395/);
   assert.match(app, /mailto:contato@brd\.adv\.br/);
+  assert.match(app, /contactEmail = "contato@brd\.adv\.br"/);
   assert.match(app, /function MapPinIcon/);
   assert.match(app, /function SocialIcon/);
   assert.match(app, /icon: "instagram"/);
@@ -93,6 +100,12 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /aria-label="Redes sociais do BRD"/);
   assert.match(app, /className="footer-route"[\s\S]*href=\{mapUrl\}/);
   assert.match(app, /className="social-link"/);
+  assert.match(app, /function LegalContactChat/);
+  assert.match(app, /function ChatBubbleIcon/);
+  assert.match(app, /className=\{`legal-chat \$\{isOpen \? "is-open" : ""\}`\}/);
+  assert.match(app, /assets\/brand\/brd-mascot-b\.svg/);
+  assert.match(app, /aria-controls="legal-chat-panel"/);
+  assert.match(app, /aria-label="Atendimento inicial BRD"/);
   assert.doesNotMatch(app, /Abrir rota no Google Maps/);
   assert.doesNotMatch(app, /name: "Maria"/);
   assert.match(app, /target="_blank"\s+rel="noreferrer"/);
@@ -103,6 +116,43 @@ test("homepage contains the core BRD institutional content", () => {
   assert.doesNotMatch(app, /<p className="hero-lead">/);
   assert.doesNotMatch(app, /className="hero-logo"/);
   assert.doesNotMatch(app, /Bernardo Advogados Associados/);
+});
+
+test("homepage offers a legally safe guided first-contact chat", () => {
+  const app = read("src/main.jsx");
+
+  for (const term of [
+    "function LegalContactChat",
+    "Primeiro contato",
+    "Atendimento inicial",
+    "Este canal nao substitui consulta juridica",
+    "nao analisa documentos",
+    "nao antecipa resultado",
+    "Evite enviar dados sensiveis",
+    "Enviar para analise",
+    "Novo contato pelo chatbot BRD",
+    "VITE_CONTACT_FORM_ENDPOINT",
+    "VITE_CONTACT_FORM_ACCESS_KEY",
+    "window.location.href = `mailto:${contactEmail}",
+  ]) {
+    assert.match(app, new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+
+  for (const field of [
+    'name="name"',
+    'name="email"',
+    'name="phone"',
+    'name="topic"',
+    'name="message"',
+    'name="schedule"',
+  ]) {
+    assert.match(app, new RegExp(field));
+  }
+
+  assert.match(app, /fetch\(chatFormEndpoint/);
+  assert.match(app, /buildChatEmailBody/);
+  assert.match(app, /brd-mascot-b\.svg/);
+  assert.doesNotMatch(app, /indeniza[cç][aã]o garantida|caso ganho|resultado garantido/i);
 });
 
 test("public assets in JSX respect the Vite base path", () => {
@@ -121,14 +171,24 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /\.partners-grid/);
   assert.match(styles, /\.partner-card/);
   assert.match(styles, /\.partner-photo/);
-  assert.match(styles, /object-fit: cover/);
-  assert.match(styles, /object-position: center top/);
+  assert.match(styles, /object-fit: contain/);
+  assert.match(styles, /object-position: center bottom/);
+  assert.match(styles, /drop-shadow/);
   assert.match(styles, /\.footer-grid/);
   assert.match(styles, /\.footer-social/);
   assert.match(styles, /\.site-header nav/);
   assert.match(styles, /\.footer-route svg/);
   assert.match(styles, /\.social-link svg/);
+  assert.match(styles, /\.legal-chat\s*\{/);
+  assert.match(styles, /\.legal-chat-toggle/);
+  assert.match(styles, /\.legal-chat-panel/);
+  assert.match(styles, /\.legal-chat-header img/);
+  assert.match(styles, /\.legal-chat-feedback\.sent/);
   assert.match(styles, /\.social-link\s*\{[\s\S]*min-height: 44px/);
+  assert.match(styles, /\.legal-chat\s*\{[\s\S]*position: fixed/);
+  assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*max-height: calc\(100svh - 128px\)/);
+  assert.match(styles, /\.legal-chat-form input,\s*\.legal-chat-form select,\s*\.legal-chat-form textarea/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat\s*\{[\s\S]*left: 12px/);
   assert.doesNotMatch(styles, /\.footer-social a\s*\{[^}]*min-height:\s*auto/);
   assert.match(styles, /\.partners-heading\s*\{[\s\S]*max-width: 980px/);
   assert.doesNotMatch(styles, /\.partners-heading\s*\{[^}]*display:\s*grid/);
@@ -136,6 +196,8 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.hero\s*\{[\s\S]*min-height: min\(700px, calc\(90svh - 76px\)\)/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partners-grid\s*\{[\s\S]*grid-template-columns: 1fr/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-card\s*\{[\s\S]*grid-template-columns: 1fr/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat\s*\{[\s\S]*left: 12px/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[\s\S]*max-height: calc\(100svh - 106px\)/);
   assert.match(styles, /center center \/ cover/);
   assert.match(styles, /font-size: clamp\(3rem, 12vw, 4\.2rem\)/);
   assert.match(styles, /scroll-padding-top: 96px/);
@@ -156,11 +218,12 @@ test("brand assets stay web friendly and chart stays lightweight", () => {
     "public/assets/brand/hero-background.jpg": 450_000,
     "public/assets/brand/logo-full-dark.png": 140_000,
     "public/assets/brand/logo-full-light.png": 140_000,
+    "public/assets/brand/brd-mascot-b.svg": 40_000,
     "public/assets/brand/icon-purple.png": 80_000,
-    "public/assets/brand/partners/luis.jpg": 80_000,
-    "public/assets/brand/partners/leticia.jpg": 80_000,
-    "public/assets/brand/partners/andre.jpg": 80_000,
-    "public/assets/brand/partners/fernanda.jpg": 80_000,
+    "public/assets/brand/partners/luis.png": 500_000,
+    "public/assets/brand/partners/leticia.png": 500_000,
+    "public/assets/brand/partners/andre.png": 500_000,
+    "public/assets/brand/partners/fernanda.png": 500_000,
   };
 
   for (const [file, maxBytes] of Object.entries(maxBytesByAsset)) {
@@ -168,6 +231,17 @@ test("brand assets stay web friendly and chart stays lightweight", () => {
     assert.ok(size <= maxBytes, `${file} should stay under ${maxBytes} bytes`);
   }
 });
+
+test("BRD mascot asset is vector, branded and chatbot-ready", () => {
+  const mascot = read("public/assets/brand/brd-mascot-b.svg");
+  assert.match(mascot, /<svg[^>]*viewBox="0 0 520 590"/);
+  assert.match(mascot, /#964AFB/);
+  assert.match(mascot, /#35185A/);
+  assert.match(mascot, /Mascote BRD em forma de B/);
+  assert.match(mascot, /balao de conversa/);
+  assert.match(mascot, /<circle[^>]*fill="#964AFB"/);
+});
+
 
 test("github pages deployment builds the dist artifact", () => {
   const workflow = read(".github/workflows/pages.yml");
