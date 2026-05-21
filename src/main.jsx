@@ -64,25 +64,25 @@ const partners = [
     name: "Luís Bernardo Júnior",
     role: "Sócio fundador",
     focus: "Estratégia empresarial, governança e condução institucional do escritório.",
-    image: "assets/brand/partners/luis.png",
+    image: "assets/brand/partners/luis.jpg",
   },
   {
     name: "Letícia Barriento",
     role: "Sócia",
     focus: "Comunicação institucional, inteligência jurídica e atuação consultiva.",
-    image: "assets/brand/partners/leticia.png",
+    image: "assets/brand/partners/leticia.jpg",
   },
   {
     name: "André Luis",
     role: "Sócio",
     focus: "Atuação empresarial com presença próxima e leitura prática dos desafios do cliente.",
-    image: "assets/brand/partners/andre.png",
+    image: "assets/brand/partners/andre.jpg",
   },
   {
     name: "Fernanda Félix",
     role: "Sócia",
     focus: "Apoio estratégico em demandas consultivas, preventivas e de rotina empresarial.",
-    image: "assets/brand/partners/fernanda.png",
+    image: "assets/brand/partners/fernanda.jpg",
   },
 ];
 
