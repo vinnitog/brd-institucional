@@ -25,7 +25,7 @@ const services = [
   },
   {
     title: "Assessoria para licitações",
-    text: "Apoio completo em editais, propostas, documentos e fases de habilitação e julgamento para ampliar oportunidades de negócio.",
+    text: "Apoio em editais, propostas, documentos e fases de habilitação e julgamento para ampliar oportunidades de negócio.",
   },
   {
     title: "Treinamentos",
@@ -51,6 +51,27 @@ const intelligenceData = [
   { name: "Governança", value: 90 },
 ];
 
+const teamPrinciples = [
+  "Sócios presentes na estratégia",
+  "Atendimento direto e responsável",
+  "Leitura multidisciplinar do negócio",
+];
+
+const insights = [
+  {
+    label: "Dados e tecnologia",
+    title: "LGPD como rotina de governança, não como documento isolado.",
+  },
+  {
+    label: "Negócios",
+    title: "Contratos revisados com visão de risco, prazo e operação.",
+  },
+  {
+    label: "Empresas",
+    title: "Crédito, crise e conformidade tratados antes do litígio.",
+  },
+];
+
 function App() {
   return (
     <>
@@ -60,8 +81,9 @@ function App() {
         </a>
         <nav>
           <a href="#sobre">Sobre</a>
-          <a href="#atuacao">Atuação</a>
-          <a href="#metodo">Método</a>
+          <a href="#expertises">Expertises</a>
+          <a href="#equipe">Equipe</a>
+          <a href="#inteligencia">Inteligência</a>
           <a href="#contato">Contato</a>
         </nav>
       </header>
@@ -69,15 +91,16 @@ function App() {
       <main id="inicio">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-content">
-          <p className="eyebrow">Advogados Associados</p>
-          <h1 id="hero-title">BRD Advocacia</h1>
+            <p className="eyebrow">Advocacia empresarial</p>
+            <img className="hero-logo" src="/assets/brand/logo-full-dark.png" alt="BRD Advocacia" />
+            <h1 id="hero-title">Decisões jurídicas com visão de negócio.</h1>
             <p className="hero-lead">Guiados pela tradição. Impulsionados pela inovação.</p>
             <div className="hero-actions" aria-label="Ações principais">
               <a className="button button-primary" href="#contato">
                 Falar com o escritório
               </a>
-              <a className="button button-ghost" href="#atuacao">
-                Ver áreas de atuação
+              <a className="button button-ghost" href="#expertises">
+                Ver expertises
               </a>
             </div>
           </div>
@@ -85,41 +108,56 @@ function App() {
 
         <section className="intro-band" aria-label="Resumo institucional">
           <div>
-            <span>Atuação empresarial</span>
+            <span>Atuação</span>
             <strong>consultiva, preventiva e contenciosa</strong>
           </div>
           <div>
-            <span>Marca</span>
-            <strong>precisa, contemporânea e humana</strong>
+            <span>Perfil</span>
+            <strong>banca empresarial com sócios próximos</strong>
           </div>
           <div>
             <span>Foco</span>
-            <strong>segurança jurídica para decisão</strong>
+            <strong>segurança jurídica para decisões relevantes</strong>
           </div>
         </section>
 
         <section className="section split" id="sobre">
           <div className="section-copy">
-            <p className="eyebrow">Quem somos</p>
-              <h2>Um escritório para empresas que precisam decidir com clareza.</h2>
+            <p className="eyebrow">O escritório</p>
+            <h2>Uma banca construída por sócios que atuam junto ao cliente.</h2>
           </div>
           <div className="body-copy">
             <p>
               A BRD une experiência jurídica, governança e uma leitura prática dos desafios
-              empresariais. O escritório nasce com uma identidade firme: preservar o que o
-              direito tem de mais sólido e aplicar inovação onde ela melhora a resposta ao cliente.
+              empresariais. O escritório preserva o rigor técnico da advocacia tradicional e
+              aplica inovação onde ela melhora velocidade, clareza e tomada de decisão.
             </p>
             <p>
-              O resultado é uma advocacia objetiva, visualmente contemporânea e orientada a risco,
-              conformidade, contratos, dados, crédito e desenvolvimento empresarial.
+              A assinatura BRD adv. reforça uma instituição coletiva: Luís Bernardo idealizou o
+              escritório, mas a entrega é feita com os demais sócios, em uma atuação coordenada,
+              próxima e multidisciplinar.
             </p>
           </div>
         </section>
 
-        <section className="section" id="atuacao">
+        <section className="section team" id="equipe">
+          <div className="team-panel">
+            <div>
+              <p className="eyebrow">Nosso time</p>
+              <h2>Estratégia compartilhada, responsabilidade individual.</h2>
+            </div>
+            <ul className="team-list" aria-label="Princípios do time BRD">
+              {teamPrinciples.map((principle) => (
+                <li key={principle}>{principle}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section className="section" id="expertises">
           <div className="section-heading">
-            <p className="eyebrow">Áreas de atuação</p>
-            <h2>Serviços jurídicos com critério, processo e visão de negócio.</h2>
+            <p className="eyebrow">Expertises</p>
+            <h2>Especialização jurídica conectada aos setores que movem empresas.</h2>
           </div>
           <div className="services-grid">
             {services.map((service, index) => (
@@ -134,7 +172,7 @@ function App() {
 
         <section className="section method" id="metodo">
           <div className="section-copy">
-            <p className="eyebrow">Metodo BRD</p>
+            <p className="eyebrow">Método BRD</p>
             <h2>Tradição jurídica com operação inteligente.</h2>
           </div>
           <div className="method-layout">
@@ -160,6 +198,22 @@ function App() {
                 ))}
               </ul>
             </div>
+          </div>
+        </section>
+
+        <section className="section intelligence" id="inteligencia">
+          <div className="section-heading">
+            <p className="eyebrow">Inteligência jurídica</p>
+            <h2>Atualização, análise e prevenção para decisões que importam.</h2>
+          </div>
+          <div className="insights-grid">
+            {insights.map((insight) => (
+              <article className="insight-card" key={insight.title}>
+                <span>{insight.label}</span>
+                <h3>{insight.title}</h3>
+                <a href="#contato">Conversar sobre o tema</a>
+              </article>
+            ))}
           </div>
         </section>
 

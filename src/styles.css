@@ -82,14 +82,14 @@ a {
 }
 
 .brand img {
-  width: clamp(132px, 15vw, 190px);
+  width: clamp(104px, 11vw, 148px);
   height: auto;
 }
 
 nav {
   display: flex;
   align-items: center;
-  gap: clamp(12px, 2vw, 26px);
+  gap: clamp(10px, 1.7vw, 24px);
   color: #eee8f5;
   font-size: 0.88rem;
   font-weight: 700;
@@ -136,6 +136,11 @@ nav a:focus-visible {
   width: min(840px, 100%);
 }
 
+.hero-logo {
+  width: min(290px, 62vw);
+  margin-bottom: 28px;
+}
+
 .eyebrow {
   margin: 0 0 16px;
   color: var(--purple-text);
@@ -163,8 +168,8 @@ h2 {
 }
 
 h1 {
-  max-width: 760px;
-  font-size: clamp(4.1rem, 11vw, 10.8rem);
+  max-width: 920px;
+  font-size: clamp(3.6rem, 8.7vw, 8.9rem);
 }
 
 h2 {
@@ -251,7 +256,8 @@ h3 {
 }
 
 .intro-band span,
-.chart-copy span {
+.chart-copy span,
+.insight-card span {
   display: block;
   margin-bottom: 8px;
   color: var(--muted-dark);
@@ -294,6 +300,43 @@ h3 {
   margin: 0 0 20px;
 }
 
+.team {
+  padding-top: 0;
+}
+
+.team-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 0.65fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: end;
+  padding: clamp(34px, 6vw, 70px);
+  color: white;
+  background:
+    linear-gradient(90deg, rgba(9, 7, 15, 0.92), rgba(9, 7, 15, 0.72)),
+    url("/assets/brand/hero-background.jpg") center / cover;
+  border-radius: 8px;
+}
+
+.team-panel h2 {
+  max-width: 900px;
+}
+
+.team-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.team-list li {
+  padding: 22px;
+  background: rgba(9, 7, 15, 0.74);
+  color: #eee8f5;
+  font-weight: 850;
+}
+
 .section-heading {
   max-width: 1040px;
   margin-bottom: clamp(32px, 5vw, 56px);
@@ -314,6 +357,10 @@ h3 {
 
 .service-card:nth-child(3n) {
   background: #f0ecf7;
+}
+
+.service-card:hover {
+  background: #fbf9ff;
 }
 
 .service-card span {
@@ -435,6 +482,40 @@ h3 {
   background: white;
 }
 
+.intelligence {
+  background: #f1eef6;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.insight-card {
+  display: flex;
+  min-height: 280px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(24px, 3vw, 36px);
+  background: white;
+}
+
+.insight-card h3 {
+  max-width: 390px;
+  font-family: "Gupter", Georgia, serif;
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+}
+
+.insight-card a {
+  width: fit-content;
+  border-bottom: 2px solid var(--purple);
+  color: var(--purple-text);
+  font-weight: 900;
+}
+
 .identity-mark {
   display: grid;
   min-height: 320px;
@@ -495,7 +576,12 @@ footer p {
   .split,
   .method-layout,
   .identity,
-  .contact {
+  .contact,
+  .team-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .insights-grid {
     grid-template-columns: 1fr;
   }
 
@@ -530,7 +616,7 @@ footer p {
   }
 
   h1 {
-    font-size: clamp(3.35rem, 18vw, 5.7rem);
+    font-size: clamp(2.85rem, 15vw, 5.4rem);
   }
 
   .intro-band,
@@ -545,6 +631,10 @@ footer p {
 
   .service-card span {
     margin-bottom: 26px;
+  }
+
+  .team-panel {
+    padding: 26px;
   }
 
   .button {
