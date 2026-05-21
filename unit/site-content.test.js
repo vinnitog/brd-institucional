@@ -30,6 +30,7 @@ test("brand references capture the official identity signals", () => {
   assert.match(references, /DM Sans/);
   assert.match(references, /Gupter/);
   assert.match(references, /C:\\Users\\Togszera\\Desktop\\BRD-identidade-visual/);
+  assert.match(references, /Maria foi removida da seção de sócios/);
 });
 
 test("homepage contains the core BRD institutional content", () => {
@@ -51,7 +52,6 @@ test("homepage contains the core BRD institutional content", () => {
     "Letícia Barriento",
     "André Luis",
     "Fernanda",
-    "Maria",
     "Rua Sete de Setembro",
     "Marília/SP",
     "17502-020",
@@ -73,7 +73,17 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /google\.com\/maps\/search/);
   assert.match(app, /tel:\+5514998325395/);
   assert.match(app, /mailto:contato@brd\.adv\.br/);
+  assert.match(app, /function MapPinIcon/);
+  assert.match(app, /function SocialIcon/);
+  assert.match(app, /icon: "instagram"/);
+  assert.match(app, /icon: "linkedin"/);
+  assert.match(app, /icon: "youtube"/);
+  assert.match(app, /icon: "facebook"/);
   assert.match(app, /aria-label="Redes sociais do BRD"/);
+  assert.match(app, /className="footer-route"[\s\S]*href=\{mapUrl\}/);
+  assert.match(app, /className="social-link"/);
+  assert.doesNotMatch(app, /Abrir rota no Google Maps/);
+  assert.doesNotMatch(app, /name: "Maria"/);
   assert.match(app, /target="_blank"\s+rel="noreferrer"/);
   assert.match(app, /O BRD une experiência jurídica/);
   assert.match(app, /className="sr-only">Guiados pela tradição\. Impulsionados pela inovação\./);
@@ -101,9 +111,18 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /\.partner-card/);
   assert.match(styles, /\.footer-grid/);
   assert.match(styles, /\.footer-social/);
+  assert.match(styles, /\.site-header nav/);
+  assert.match(styles, /\.footer-route svg/);
+  assert.match(styles, /\.social-link svg/);
+  assert.match(styles, /\.social-link\s*\{[\s\S]*min-height: 44px/);
+  assert.doesNotMatch(styles, /\.footer-social a\s*\{[^}]*min-height:\s*auto/);
+  assert.match(styles, /\.partners-heading\s*\{[\s\S]*max-width: 980px/);
+  assert.doesNotMatch(styles, /\.partners-heading\s*\{[^}]*display:\s*grid/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.hero\s*\{[\s\S]*align-items: center/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.hero\s*\{[\s\S]*min-height: min\(700px, calc\(90svh - 76px\)\)/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partners-grid\s*\{[\s\S]*grid-template-columns: 1fr/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-card\s*\{[\s\S]*grid-template-columns: 1fr/);
-  assert.match(styles, /left center \/ cover/);
+  assert.match(styles, /center center \/ cover/);
   assert.match(styles, /font-size: clamp\(3rem, 12vw, 4\.2rem\)/);
   assert.match(styles, /scroll-padding-top: 96px/);
   assert.match(styles, /prefers-reduced-motion/);

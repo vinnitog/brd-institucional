@@ -80,11 +80,6 @@ const partners = [
     role: "Sócia",
     focus: "Apoio estratégico em demandas consultivas, preventivas e de rotina empresarial.",
   },
-  {
-    name: "Maria",
-    role: "Sócia",
-    focus: "Atuação integrada aos projetos jurídicos e à relação direta com clientes.",
-  },
 ];
 
 const insights = [
@@ -102,18 +97,54 @@ const insights = [
   },
 ];
 
+const mapUrl = "https://www.google.com/maps/search/?api=1&query=BRD%20Advogados%20Associados%20Rua%20Sete%20de%20Setembro%201359%20Mar%C3%ADlia%20SP";
+
 const socialLinks = [
-  { label: "Instagram", href: "https://www.instagram.com/brd.adv/" },
+  { label: "Instagram", icon: "instagram", href: "https://www.instagram.com/brd.adv/" },
   {
     label: "LinkedIn",
+    icon: "linkedin",
     href: "https://www.linkedin.com/company/bernardo-advogados-associados-brd/posts/?feedView=all",
   },
-  { label: "YouTube", href: "https://www.youtube.com/channel/UCBEoHdFSNDyOLZkpyo5bTLg" },
+  { label: "YouTube", icon: "youtube", href: "https://www.youtube.com/channel/UCBEoHdFSNDyOLZkpyo5bTLg" },
   {
     label: "Facebook",
+    icon: "facebook",
     href: "https://www.facebook.com/people/Bernardo-Advogados-Associados/61570437647099/?mibextid=wwXIfr&rdid=546vsHgdDovVzc5O&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F16ZTurjKJJ%2F%3Fmibextid%3DwwXIfr",
   },
 ];
+
+function MapPinIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 21s6.5-5.7 6.5-12a6.5 6.5 0 0 0-13 0c0 6.3 6.5 12 6.5 12Z" />
+      <circle cx="12" cy="9" r="2.4" />
+    </svg>
+  );
+}
+
+function SocialIcon({ type }) {
+  if (type === "instagram") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="5" y="5" width="14" height="14" rx="4" />
+        <circle cx="12" cy="12" r="3.2" />
+        <circle cx="16.4" cy="7.6" r="0.9" />
+      </svg>
+    );
+  }
+
+  if (type === "youtube") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="4" y="7" width="16" height="10" rx="3" />
+        <path d="m11 10 4 2-4 2v-4Z" />
+      </svg>
+    );
+  }
+
+  return <span aria-hidden="true">{type === "linkedin" ? "in" : "f"}</span>;
+}
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -332,29 +363,31 @@ function App() {
         </div>
         <div className="footer-grid">
           <address>
-            <span>Localização</span>
+            <span className="footer-kicker">Localização</span>
             Rua Sete de Setembro, n.° 1359<br />
             Senador Salgado Filho<br />
             Marília/SP, 17502-020
           </address>
           <div>
-            <span>Como chegar</span>
             <a
-              href="https://www.google.com/maps/search/?api=1&query=BRD%20Advogados%20Associados%20Rua%20Sete%20de%20Setembro%201359%20Mar%C3%ADlia%20SP"
+              className="footer-route"
+              href={mapUrl}
               target="_blank"
               rel="noreferrer"
             >
-              Abrir rota no Google Maps
+              <MapPinIcon />
+              <span>Como chegar</span>
             </a>
             <a href="tel:+5514998325395">(14) 99832-5395</a>
             <a href="mailto:contato@brd.adv.br">contato@brd.adv.br</a>
           </div>
           <div>
-            <span>Redes sociais</span>
+            <span className="footer-kicker">Redes sociais</span>
             <nav className="footer-social" aria-label="Redes sociais do BRD">
               {socialLinks.map((social) => (
-                <a key={social.label} href={social.href} target="_blank" rel="noreferrer">
-                  {social.label}
+                <a className="social-link" key={social.label} href={social.href} target="_blank" rel="noreferrer">
+                  <SocialIcon type={social.icon} />
+                  <span>{social.label}</span>
                 </a>
               ))}
             </nav>
