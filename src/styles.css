@@ -287,12 +287,6 @@ h3 {
   margin-top: 34px;
 }
 
-.email-composer-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
 .button {
   display: inline-flex;
   min-height: 48px;
@@ -339,6 +333,42 @@ h3 {
 .button-light {
   color: white;
   border-color: rgba(255, 255, 255, 0.34);
+}
+
+.email-contact-link {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 8px;
+  padding: 13px 18px;
+  color: white;
+  font-weight: 900;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.email-contact-link svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.email-contact-link:hover,
+.email-contact-link:focus-visible {
+  border-color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+.email-contact-link:focus-visible {
+  outline: 3px solid #d9c2ff;
+  outline-offset: 3px;
 }
 
 .intro-band {
@@ -1293,6 +1323,10 @@ footer a:focus-visible {
   }
 
   .button {
+    width: 100%;
+  }
+
+  .email-contact-link {
     width: 100%;
   }
 
