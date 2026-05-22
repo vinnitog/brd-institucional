@@ -94,9 +94,10 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /facebook\.com\/people\/Bernardo-Advogados-Associados/);
   assert.match(app, /google\.com\/maps\/search/);
   assert.match(app, /tel:\+5514998325395/);
-  assert.match(app, /import \{ buildEmailComposerUrl \} from "\.\/emailLinks\.mjs";/);
-  assert.match(app, /href=\{buildEmailComposerUrl\(contactEmail, contactEmailSubject, contactEmailBody\)\}/);
-  assert.match(app, /mailto:\$\{contactEmail\}/);
+  assert.match(app, /import \{ buildGmailComposeUrl, buildOutlookComposeUrl \} from "\.\/emailLinks\.mjs";/);
+  assert.match(app, /EmailComposerActions/);
+  assert.match(app, /href=\{buildGmailComposeUrl\(contactEmail, contactEmailSubject\)\}/);
+  assert.doesNotMatch(app, /mailto:/);
   assert.match(app, /contactEmail = "contato@brd\.adv\.br"/);
   assert.match(app, /chatAnalysisEmail = "vinnitog@gmail\.com"/);
   assert.match(app, /function MapPinIcon/);
@@ -145,7 +146,7 @@ test("homepage offers a legally safe guided first-contact chat", () => {
     "Observação de segurança",
     "VITE_CONTACT_FORM_ENDPOINT",
     "VITE_CONTACT_FORM_ACCESS_KEY",
-    "window.location.href = buildEmailComposerUrl(chatAnalysisEmail",
+    "Escolha onde redigir a mensagem pronta para envio ao BRD.",
   ]) {
     assert.match(app, new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
@@ -164,9 +165,11 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   assert.match(app, /fetch\(chatFormEndpoint/);
   assert.match(app, /to_email: chatAnalysisEmail/);
   assert.doesNotMatch(app, /to_email: contactEmail/);
-  assert.doesNotMatch(app, /buildEmailComposerUrl\(contactEmail, subject, emailBody\)/);
+  assert.doesNotMatch(app, /window\.location\.href/);
   assert.match(app, /reply_to: form\.email/);
   assert.match(app, /buildChatEmailBody/);
+  assert.match(app, /setEmailDraft\(draft\)/);
+  assert.match(app, /email=\{emailDraft\.email\}/);
   assert.match(app, /brd-mascot-b\.svg/);
   assert.match(app, /Melhor período para retorno/);
   assert.match(app, /placeholder="Ex\.: manhã, tarde ou dia específico"/);
@@ -174,18 +177,21 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   assert.doesNotMatch(app, /indeniza[cç][aã]o garantida|caso ganho|resultado garantido/i);
 });
 
-test("email composer links encode recipients, subjects and bodies", async () => {
-  const { buildEmailComposerUrl } = await importModule("src/emailLinks.mjs");
+test("email composer links open webmail compose URLs", async () => {
+  const { buildGmailComposeUrl, buildOutlookComposeUrl } = await importModule("src/emailLinks.mjs");
 
   assert.equal(
-    buildEmailComposerUrl("contato@brd.adv.br", "Contato pelo site BRD", "Linha 1\nLinha 2"),
-    "mailto:contato@brd.adv.br?subject=Contato%20pelo%20site%20BRD&body=Linha%201%0ALinha%202",
+    buildGmailComposeUrl("contato@brd.adv.br", "Contato pelo site BRD", "Linha 1\nLinha 2"),
+    "https://mail.google.com/mail/?view=cm&fs=1&to=contato%40brd.adv.br&su=Contato+pelo+site+BRD&body=Linha+1%0ALinha+2",
   );
   assert.equal(
-    buildEmailComposerUrl("contato@brd.adv.br", "Análise jurídica", "Dados com acento"),
-    "mailto:contato@brd.adv.br?subject=An%C3%A1lise%20jur%C3%ADdica&body=Dados%20com%20acento",
+    buildOutlookComposeUrl("contato@brd.adv.br", "Análise jurídica", "Dados com acento"),
+    "https://outlook.live.com/mail/0/deeplink/compose?to=vinnitog%40gmail.com&subject=An%C3%A1lise+jur%C3%ADdica&body=Dados+com+acento",
   );
-  assert.equal(buildEmailComposerUrl("contato@brd.adv.br"), "mailto:contato@brd.adv.br");
+  assert.equal(
+    buildGmailComposeUrl("contato@brd.adv.br"),
+    "https://mail.google.com/mail/?view=cm&fs=1&to=contato%40brd.adv.br",
+  );
 });
 
 test("public assets in JSX respect the Vite base path", () => {

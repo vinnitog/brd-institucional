@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { buildEmailComposerUrl } from "./emailLinks.mjs";
+import { buildGmailComposeUrl, buildOutlookComposeUrl } from "./emailLinks.mjs";
 import "./styles.css";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
@@ -168,6 +168,31 @@ function buildChatEmailBody(form) {
   ].join("\n");
 }
 
+function EmailComposerActions({ email, subject, body, variant = "light" }) {
+  const buttonClassName = `button ${variant === "primary" ? "button-primary" : "button-light"}`;
+
+  return (
+    <div className="email-composer-actions" aria-label="Opções para redigir e-mail">
+      <a
+        className={buttonClassName}
+        href={buildGmailComposeUrl(email, subject, body)}
+        target="_blank"
+        rel="noreferrer"
+      >
+        Enviar via Gmail
+      </a>
+      <a
+        className="button button-light"
+        href={buildOutlookComposeUrl(email, subject, body)}
+        target="_blank"
+        rel="noreferrer"
+      >
+        Enviar via Outlook
+      </a>
+    </div>
+  );
+}
+
 function MapPinIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -205,6 +230,7 @@ function LegalContactChat() {
   const [form, setForm] = useState(initialChatForm);
   const [status, setStatus] = useState("idle");
   const [feedback, setFeedback] = useState("");
+  const [emailDraft, setEmailDraft] = useState(null);
 
   const updateField = (event) => {
     const { name, value } = event.target;
@@ -215,9 +241,11 @@ function LegalContactChat() {
     event.preventDefault();
     setStatus("sending");
     setFeedback("");
+    setEmailDraft(null);
 
     const emailBody = buildChatEmailBody(form);
     const subject = `[Site BRD] Novo contato - ${form.topic || "Atendimento inicial"}`;
+    const draft = { email: chatAnalysisEmail, subject, body: emailBody };
     const payload = {
       ...(chatFormAccessKey ? { access_key: chatFormAccessKey } : {}),
       subject,
@@ -250,9 +278,9 @@ function LegalContactChat() {
         return;
       }
 
-      window.location.href = buildEmailComposerUrl(chatAnalysisEmail, subject, emailBody);
+      setEmailDraft(draft);
       setStatus("sent");
-      setFeedback("Abrimos seu e-mail com uma mensagem pronta para envio ao BRD.");
+      setFeedback("Escolha onde redigir a mensagem pronta para envio ao BRD.");
       setForm(initialChatForm);
     } catch {
       setStatus("error");
@@ -341,6 +369,14 @@ function LegalContactChat() {
               {status === "sending" ? "Enviando..." : "Enviar para análise"}
             </button>
             {feedback ? <p className={`legal-chat-feedback ${status}`}>{feedback}</p> : null}
+            {emailDraft ? (
+              <EmailComposerActions
+                email={emailDraft.email}
+                subject={emailDraft.subject}
+                body={emailDraft.body}
+                variant="primary"
+              />
+            ) : null}
           </form>
         </aside>
       ) : null}
@@ -549,9 +585,7 @@ function App() {
             <h2 id="contact-title">Vamos conversar sobre o próximo passo jurídico da sua empresa.</h2>
           </div>
           <div className="contact-actions">
-            <a className="button button-light" href={buildEmailComposerUrl(contactEmail, contactEmailSubject, contactEmailBody)}>
-              Enviar e-mail
-            </a>
+            <EmailComposerActions email={contactEmail} subject={contactEmailSubject} body={contactEmailBody} />
           </div>
         </section>
       </main>
@@ -579,7 +613,13 @@ function App() {
               <span>Como chegar</span>
             </a>
             <a href="tel:+5514998325395">(14) 99832-5395</a>
-            <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
+            <a
+              href={buildGmailComposeUrl(contactEmail, contactEmailSubject)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {contactEmail}
+            </a>
           </div>
           <div>
             <span className="footer-kicker">Redes sociais</span>
