@@ -1,13 +1,33 @@
-export function buildEmailComposerUrl(email, subject = "", body = "") {
-  const params = [];
+function buildQuery(params) {
+  const query = new URLSearchParams();
 
-  if (subject) {
-    params.push(`subject=${encodeURIComponent(subject)}`);
+  for (const [key, value] of Object.entries(params)) {
+    if (value) {
+      query.set(key, value);
+    }
   }
 
-  if (body) {
-    params.push(`body=${encodeURIComponent(body)}`);
-  }
+  return query.toString();
+}
 
-  return `mailto:${email}${params.length ? `?${params.join("&")}` : ""}`;
+export function buildGmailComposeUrl(email, subject = "", body = "") {
+  const query = buildQuery({
+    view: "cm",
+    fs: "1",
+    to: email,
+    su: subject,
+    body,
+  });
+
+  return `https://mail.google.com/mail/?${query}`;
+}
+
+export function buildOutlookComposeUrl(email, subject = "", body = "") {
+  const query = buildQuery({
+    to: email,
+    subject,
+    body,
+  });
+
+  return `https://outlook.live.com/mail/0/deeplink/compose?${query}`;
 }
