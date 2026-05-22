@@ -94,10 +94,15 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /facebook\.com\/people\/Bernardo-Advogados-Associados/);
   assert.match(app, /google\.com\/maps\/search/);
   assert.match(app, /tel:\+5514998325395/);
-  assert.match(app, /import \{ buildGmailComposeUrl, buildOutlookComposeUrl \} from "\.\/emailLinks\.mjs";/);
-  assert.match(app, /EmailComposerActions/);
+  assert.match(app, /import \{ buildGmailComposeUrl \} from "\.\/emailLinks\.mjs";/);
+  assert.match(app, /function EmailIcon/);
+  assert.match(app, /EmailContactLink/);
+  assert.match(app, /<EmailIcon \/>/);
+  assert.match(app, /<span>\{email\}<\/span>/);
+  assert.match(app, /<EmailContactLink email=\{contactEmail\} subject=\{contactEmailSubject\} body=\{contactEmailBody\} \/>/);
   assert.match(app, /href=\{buildGmailComposeUrl\(contactEmail, contactEmailSubject\)\}/);
   assert.doesNotMatch(app, /mailto:/);
+  assert.doesNotMatch(app, /buildOutlookComposeUrl|Enviar via Gmail|Enviar via Outlook/);
   assert.match(app, /contactEmail = "contato@brd\.adv\.br"/);
   assert.match(app, /chatAnalysisEmail = "vinnitog@gmail\.com"/);
   assert.match(app, /function MapPinIcon/);
@@ -146,7 +151,7 @@ test("homepage offers a legally safe guided first-contact chat", () => {
     "Observação de segurança",
     "VITE_CONTACT_FORM_ENDPOINT",
     "VITE_CONTACT_FORM_ACCESS_KEY",
-    "Escolha onde redigir a mensagem pronta para envio ao BRD.",
+    "Agradecemos seu contato!",
   ]) {
     assert.match(app, new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
@@ -165,11 +170,15 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   assert.match(app, /fetch\(chatFormEndpoint/);
   assert.match(app, /to_email: chatAnalysisEmail/);
   assert.doesNotMatch(app, /to_email: contactEmail/);
+  assert.match(app, /function openGmailCompose/);
+  assert.match(app, /window\.open\(url, "_blank", "noopener,noreferrer"\)/);
+  assert.match(app, /window\.location\.assign\(url\)/);
+  assert.match(app, /openGmailCompose\(gmailComposeUrl\)/);
   assert.doesNotMatch(app, /window\.location\.href/);
   assert.match(app, /reply_to: form\.email/);
   assert.match(app, /buildChatEmailBody/);
-  assert.match(app, /setEmailDraft\(draft\)/);
-  assert.match(app, /email=\{emailDraft\.email\}/);
+  assert.match(app, /const gmailComposeUrl = buildGmailComposeUrl\(chatAnalysisEmail, subject, emailBody\)/);
+  assert.doesNotMatch(app, /emailDraft|setEmailDraft/);
   assert.match(app, /brd-mascot-b\.svg/);
   assert.match(app, /Melhor período para retorno/);
   assert.match(app, /placeholder="Ex\.: manhã, tarde ou dia específico"/);
@@ -177,16 +186,12 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   assert.doesNotMatch(app, /indeniza[cç][aã]o garantida|caso ganho|resultado garantido/i);
 });
 
-test("email composer links open webmail compose URLs", async () => {
-  const { buildGmailComposeUrl, buildOutlookComposeUrl } = await importModule("src/emailLinks.mjs");
+test("email composer links open Gmail compose URLs", async () => {
+  const { buildGmailComposeUrl } = await importModule("src/emailLinks.mjs");
 
   assert.equal(
     buildGmailComposeUrl("contato@brd.adv.br", "Contato pelo site BRD", "Linha 1\nLinha 2"),
     "https://mail.google.com/mail/?view=cm&fs=1&to=contato%40brd.adv.br&su=Contato+pelo+site+BRD&body=Linha+1%0ALinha+2",
-  );
-  assert.equal(
-    buildOutlookComposeUrl("contato@brd.adv.br", "Análise jurídica", "Dados com acento"),
-    "https://outlook.live.com/mail/0/deeplink/compose?to=vinnitog%40gmail.com&subject=An%C3%A1lise+jur%C3%ADdica&body=Dados+com+acento",
   );
   assert.equal(
     buildGmailComposeUrl("contato@brd.adv.br"),
@@ -255,6 +260,9 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /prefers-reduced-motion/);
   assert.match(styles, /\.button:focus-visible/);
   assert.match(styles, /\.menu-toggle:focus-visible/);
+  assert.match(styles, /\.email-contact-link/);
+  assert.match(styles, /\.email-contact-link svg/);
+  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.email-contact-link\s*\{[\s\S]*width: 100%/);
   assert.match(styles, /animation-delay: 0\.01ms !important/);
   assert.doesNotMatch(styles, /overflow-x: auto/);
   assert.doesNotMatch(styles, /letter-spacing:\s*-/);

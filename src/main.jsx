@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { buildGmailComposeUrl, buildOutlookComposeUrl } from "./emailLinks.mjs";
+import { buildGmailComposeUrl } from "./emailLinks.mjs";
 import "./styles.css";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
@@ -168,29 +168,35 @@ function buildChatEmailBody(form) {
   ].join("\n");
 }
 
-function EmailComposerActions({ email, subject, body, variant = "light" }) {
-  const buttonClassName = `button ${variant === "primary" ? "button-primary" : "button-light"}`;
-
+function EmailIcon() {
   return (
-    <div className="email-composer-actions" aria-label="Opções para redigir e-mail">
-      <a
-        className={buttonClassName}
-        href={buildGmailComposeUrl(email, subject, body)}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Enviar via Gmail
-      </a>
-      <a
-        className="button button-light"
-        href={buildOutlookComposeUrl(email, subject, body)}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Enviar via Outlook
-      </a>
-    </div>
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <rect x="4" y="6" width="16" height="12" rx="2" />
+      <path d="m5 8 7 5 7-5" />
+    </svg>
   );
+}
+
+function EmailContactLink({ email, subject, body }) {
+  return (
+    <a
+      className="email-contact-link"
+      href={buildGmailComposeUrl(email, subject, body)}
+      target="_blank"
+      rel="noreferrer"
+    >
+      <EmailIcon />
+      <span>{email}</span>
+    </a>
+  );
+}
+
+function openGmailCompose(url) {
+  const composeWindow = window.open(url, "_blank", "noopener,noreferrer");
+
+  if (!composeWindow) {
+    window.location.assign(url);
+  }
 }
 
 function MapPinIcon() {
@@ -230,7 +236,6 @@ function LegalContactChat() {
   const [form, setForm] = useState(initialChatForm);
   const [status, setStatus] = useState("idle");
   const [feedback, setFeedback] = useState("");
-  const [emailDraft, setEmailDraft] = useState(null);
 
   const updateField = (event) => {
     const { name, value } = event.target;
@@ -241,11 +246,10 @@ function LegalContactChat() {
     event.preventDefault();
     setStatus("sending");
     setFeedback("");
-    setEmailDraft(null);
 
     const emailBody = buildChatEmailBody(form);
     const subject = `[Site BRD] Novo contato - ${form.topic || "Atendimento inicial"}`;
-    const draft = { email: chatAnalysisEmail, subject, body: emailBody };
+    const gmailComposeUrl = buildGmailComposeUrl(chatAnalysisEmail, subject, emailBody);
     const payload = {
       ...(chatFormAccessKey ? { access_key: chatFormAccessKey } : {}),
       subject,
@@ -272,15 +276,16 @@ function LegalContactChat() {
           throw new Error("Contact form request failed");
         }
 
+        openGmailCompose(gmailComposeUrl);
         setStatus("sent");
-        setFeedback("Contato enviado. A equipe do BRD retornará assim que possível.");
+        setFeedback("Agradecemos seu contato!");
         setForm(initialChatForm);
         return;
       }
 
-      setEmailDraft(draft);
+      openGmailCompose(gmailComposeUrl);
       setStatus("sent");
-      setFeedback("Escolha onde redigir a mensagem pronta para envio ao BRD.");
+      setFeedback("Agradecemos seu contato!");
       setForm(initialChatForm);
     } catch {
       setStatus("error");
@@ -369,14 +374,6 @@ function LegalContactChat() {
               {status === "sending" ? "Enviando..." : "Enviar para análise"}
             </button>
             {feedback ? <p className={`legal-chat-feedback ${status}`}>{feedback}</p> : null}
-            {emailDraft ? (
-              <EmailComposerActions
-                email={emailDraft.email}
-                subject={emailDraft.subject}
-                body={emailDraft.body}
-                variant="primary"
-              />
-            ) : null}
           </form>
         </aside>
       ) : null}
@@ -585,7 +582,7 @@ function App() {
             <h2 id="contact-title">Vamos conversar sobre o próximo passo jurídico da sua empresa.</h2>
           </div>
           <div className="contact-actions">
-            <EmailComposerActions email={contactEmail} subject={contactEmailSubject} body={contactEmailBody} />
+            <EmailContactLink email={contactEmail} subject={contactEmailSubject} body={contactEmailBody} />
           </div>
         </section>
       </main>
