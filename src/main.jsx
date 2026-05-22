@@ -192,11 +192,7 @@ function EmailContactLink({ email, subject, body }) {
 }
 
 function openGmailCompose(url) {
-  const composeWindow = window.open(url, "_blank", "noopener,noreferrer");
-
-  if (!composeWindow) {
-    window.location.assign(url);
-  }
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 function MapPinIcon() {
@@ -610,13 +606,6 @@ function App() {
               <span>Como chegar</span>
             </a>
             <a href="tel:+5514998325395">(14) 99832-5395</a>
-            <a
-              href={buildGmailComposeUrl(contactEmail, contactEmailSubject)}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {contactEmail}
-            </a>
           </div>
           <div>
             <span className="footer-kicker">Redes sociais</span>

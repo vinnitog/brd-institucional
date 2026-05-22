@@ -100,7 +100,8 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /<EmailIcon \/>/);
   assert.match(app, /<span>\{email\}<\/span>/);
   assert.match(app, /<EmailContactLink email=\{contactEmail\} subject=\{contactEmailSubject\} body=\{contactEmailBody\} \/>/);
-  assert.match(app, /href=\{buildGmailComposeUrl\(contactEmail, contactEmailSubject\)\}/);
+  assert.match(app, /href=\{buildGmailComposeUrl\(email, subject, body\)\}/);
+  assert.doesNotMatch(app, /href=\{buildGmailComposeUrl\(contactEmail, contactEmailSubject\)\}/);
   assert.doesNotMatch(app, /mailto:/);
   assert.doesNotMatch(app, /buildOutlookComposeUrl|Enviar via Gmail|Enviar via Outlook/);
   assert.match(app, /contactEmail = "contato@brd\.adv\.br"/);
@@ -172,7 +173,7 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   assert.doesNotMatch(app, /to_email: contactEmail/);
   assert.match(app, /function openGmailCompose/);
   assert.match(app, /window\.open\(url, "_blank", "noopener,noreferrer"\)/);
-  assert.match(app, /window\.location\.assign\(url\)/);
+  assert.doesNotMatch(app, /window\.location\.assign/);
   assert.match(app, /openGmailCompose\(gmailComposeUrl\)/);
   assert.doesNotMatch(app, /window\.location\.href/);
   assert.match(app, /reply_to: form\.email/);
