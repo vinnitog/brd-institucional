@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
+import { buildEmailComposerUrl } from "./emailLinks.mjs";
 import "./styles.css";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
@@ -120,6 +121,9 @@ const socialLinks = [
 ];
 
 const contactEmail = "contato@brd.adv.br";
+const chatAnalysisEmail = "contato@brd.adv.br";
+const contactEmailSubject = "Contato pelo site BRD";
+const contactEmailBody = "Ola, equipe BRD.\n\nGostaria de conversar sobre uma demanda juridica da minha empresa.";
 const chatFormEndpoint = import.meta.env.VITE_CONTACT_FORM_ENDPOINT ?? "";
 const chatFormAccessKey = import.meta.env.VITE_CONTACT_FORM_ACCESS_KEY ?? "";
 
@@ -217,7 +221,7 @@ function LegalContactChat() {
     const payload = {
       ...(chatFormAccessKey ? { access_key: chatFormAccessKey } : {}),
       subject,
-      to_email: contactEmail,
+      to_email: chatAnalysisEmail,
       from_name: form.name,
       reply_to: form.email,
       name: form.name,
@@ -246,7 +250,7 @@ function LegalContactChat() {
         return;
       }
 
-      window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+      window.location.href = buildEmailComposerUrl(chatAnalysisEmail, subject, emailBody);
       setStatus("sent");
       setFeedback("Abrimos seu e-mail com uma mensagem pronta para envio ao BRD.");
       setForm(initialChatForm);
@@ -545,10 +549,7 @@ function App() {
             <h2 id="contact-title">Vamos conversar sobre o próximo passo jurídico da sua empresa.</h2>
           </div>
           <div className="contact-actions">
-            <a className="button button-primary" href="https://www.instagram.com/brd.adv/" target="_blank" rel="noreferrer">
-              Abrir Instagram
-            </a>
-            <a className="button button-light" href={`mailto:${contactEmail}`}>
+            <a className="button button-light" href={buildEmailComposerUrl(contactEmail, contactEmailSubject, contactEmailBody)}>
               Enviar e-mail
             </a>
           </div>
