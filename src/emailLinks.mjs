@@ -21,13 +21,3 @@ export function buildGmailComposeUrl(email, subject = "", body = "") {
 
   return `https://mail.google.com/mail/?${query}`;
 }
-
-export function buildOutlookComposeUrl(email, subject = "", body = "") {
-  const query = buildQuery({
-    to: email,
-    subject,
-    body,
-  });
-
-  return `https://outlook.live.com/mail/0/deeplink/compose?${query}`;
-}
