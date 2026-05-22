@@ -2,11 +2,16 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { pathToFileURL } = require("node:url");
 
 const root = path.join(__dirname, "..");
 
 function read(file) {
   return fs.readFileSync(path.join(root, file), "utf8");
+}
+
+function importModule(file) {
+  return import(pathToFileURL(path.join(root, file)).href);
 }
 
 test("site entrypoints and brand documentation exist", () => {
@@ -89,8 +94,11 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /facebook\.com\/people\/Bernardo-Advogados-Associados/);
   assert.match(app, /google\.com\/maps\/search/);
   assert.match(app, /tel:\+5514998325395/);
+  assert.match(app, /import \{ buildEmailComposerUrl \} from "\.\/emailLinks\.mjs";/);
+  assert.match(app, /href=\{buildEmailComposerUrl\(contactEmail, contactEmailSubject, contactEmailBody\)\}/);
   assert.match(app, /mailto:\$\{contactEmail\}/);
   assert.match(app, /contactEmail = "contato@brd\.adv\.br"/);
+  assert.match(app, /chatAnalysisEmail = "vinnitog@gmail\.com"/);
   assert.match(app, /function MapPinIcon/);
   assert.match(app, /function SocialIcon/);
   assert.match(app, /icon: "instagram"/);
@@ -100,6 +108,8 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /aria-label="Redes sociais do BRD"/);
   assert.match(app, /className="footer-route"[\s\S]*href=\{mapUrl\}/);
   assert.match(app, /className="social-link"/);
+  assert.doesNotMatch(app, /contact-actions[\s\S]*instagram\.com\/brd\.adv/);
+  assert.doesNotMatch(app, /Abrir Instagram/);
   assert.match(app, /function LegalContactChat/);
   assert.match(app, /className=\{`legal-chat \$\{isOpen \? "is-open" : ""\}`\}/);
   assert.match(app, /assets\/brand\/brd-mascot-b\.svg/);
@@ -135,7 +145,7 @@ test("homepage offers a legally safe guided first-contact chat", () => {
     "Observação de segurança",
     "VITE_CONTACT_FORM_ENDPOINT",
     "VITE_CONTACT_FORM_ACCESS_KEY",
-    "window.location.href = `mailto:${contactEmail}",
+    "window.location.href = buildEmailComposerUrl(chatAnalysisEmail",
   ]) {
     assert.match(app, new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
@@ -152,13 +162,30 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   }
 
   assert.match(app, /fetch\(chatFormEndpoint/);
-  assert.match(app, /to_email: contactEmail/);
+  assert.match(app, /to_email: chatAnalysisEmail/);
+  assert.doesNotMatch(app, /to_email: contactEmail/);
+  assert.doesNotMatch(app, /buildEmailComposerUrl\(contactEmail, subject, emailBody\)/);
   assert.match(app, /reply_to: form\.email/);
   assert.match(app, /buildChatEmailBody/);
   assert.match(app, /brd-mascot-b\.svg/);
   assert.match(app, /Melhor período para retorno/);
   assert.match(app, /placeholder="Ex\.: manhã, tarde ou dia específico"/);
+  assert.doesNotMatch(app, /Use o e-mail \$\{chatAnalysisEmail\}/);
   assert.doesNotMatch(app, /indeniza[cç][aã]o garantida|caso ganho|resultado garantido/i);
+});
+
+test("email composer links encode recipients, subjects and bodies", async () => {
+  const { buildEmailComposerUrl } = await importModule("src/emailLinks.mjs");
+
+  assert.equal(
+    buildEmailComposerUrl("contato@brd.adv.br", "Contato pelo site BRD", "Linha 1\nLinha 2"),
+    "mailto:contato@brd.adv.br?subject=Contato%20pelo%20site%20BRD&body=Linha%201%0ALinha%202",
+  );
+  assert.equal(
+    buildEmailComposerUrl("contato@brd.adv.br", "Análise jurídica", "Dados com acento"),
+    "mailto:contato@brd.adv.br?subject=An%C3%A1lise%20jur%C3%ADdica&body=Dados%20com%20acento",
+  );
+  assert.equal(buildEmailComposerUrl("contato@brd.adv.br"), "mailto:contato@brd.adv.br");
 });
 
 test("public assets in JSX respect the Vite base path", () => {
