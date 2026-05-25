@@ -940,6 +940,14 @@ h3 {
   padding: 14px;
 }
 
+.legal-chat-honeypot {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .legal-chat-form label {
   display: grid;
   gap: 6px;

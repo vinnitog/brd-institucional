@@ -144,6 +144,16 @@ const initialChatForm = {
   topic: "",
   message: "",
   schedule: "",
+  company: "",
+};
+
+const FIELD_LIMITS = {
+  name: 120,
+  email: 160,
+  phone: 32,
+  topic: 60,
+  message: 2000,
+  schedule: 80,
 };
 
 function buildChatEmailBody(form) {
@@ -240,23 +250,40 @@ function LegalContactChat() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (form.company) {
+      setStatus("sent");
+      setFeedback("Agradecemos seu contato!");
+      setForm(initialChatForm);
+      return;
+    }
+
     setStatus("sending");
     setFeedback("");
 
-    const emailBody = buildChatEmailBody(form);
-    const subject = `[Site BRD] Novo contato - ${form.topic || "Atendimento inicial"}`;
+    const cleaned = {
+      name: form.name.trim().slice(0, FIELD_LIMITS.name),
+      email: form.email.trim().slice(0, FIELD_LIMITS.email),
+      phone: form.phone.trim().slice(0, FIELD_LIMITS.phone),
+      topic: form.topic.trim().slice(0, FIELD_LIMITS.topic),
+      message: form.message.trim().slice(0, FIELD_LIMITS.message),
+      schedule: form.schedule.trim().slice(0, FIELD_LIMITS.schedule),
+    };
+
+    const emailBody = buildChatEmailBody(cleaned);
+    const subject = `[Site BRD] Novo contato - ${cleaned.topic || "Atendimento inicial"}`;
     const gmailComposeUrl = buildGmailComposeUrl(chatAnalysisEmail, subject, emailBody);
     const payload = {
       ...(chatFormAccessKey ? { access_key: chatFormAccessKey } : {}),
       subject,
       to_email: chatAnalysisEmail,
-      from_name: form.name,
-      reply_to: form.email,
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      topic: form.topic,
-      schedule: form.schedule,
+      from_name: cleaned.name,
+      reply_to: cleaned.email,
+      name: cleaned.name,
+      email: cleaned.email,
+      phone: cleaned.phone,
+      topic: cleaned.topic,
+      schedule: cleaned.schedule,
       message: emailBody,
     };
 
@@ -300,7 +327,14 @@ function LegalContactChat() {
         onClick={() => setIsOpen((current) => !current)}
       >
         <span className="legal-chat-toggle-icon" aria-hidden="true">
-          <img src={assetPath("assets/brand/brd-mascot-b.svg")} alt="" />
+          <img
+            src={assetPath("assets/brand/brd-mascot-b.svg")}
+            alt=""
+            width="34"
+            height="34"
+            decoding="async"
+            loading="lazy"
+          />
         </span>
         <span>Fale comigo!</span>
       </button>
@@ -328,18 +362,54 @@ function LegalContactChat() {
             </p>
           </div>
 
-          <form className="legal-chat-form" onSubmit={handleSubmit}>
+          <form className="legal-chat-form" onSubmit={handleSubmit} noValidate={false}>
+            <div className="legal-chat-honeypot" aria-hidden="true">
+              <label>
+                Empresa
+                <input
+                  name="company"
+                  value={form.company}
+                  onChange={updateField}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </label>
+            </div>
             <label>
               Nome
-              <input name="name" value={form.name} onChange={updateField} required autoComplete="name" />
+              <input
+                name="name"
+                value={form.name}
+                onChange={updateField}
+                required
+                autoComplete="name"
+                maxLength={FIELD_LIMITS.name}
+              />
             </label>
             <label>
               E-mail
-              <input name="email" value={form.email} onChange={updateField} required type="email" autoComplete="email" />
+              <input
+                name="email"
+                value={form.email}
+                onChange={updateField}
+                required
+                type="email"
+                autoComplete="email"
+                maxLength={FIELD_LIMITS.email}
+                inputMode="email"
+              />
             </label>
             <label>
               Telefone, se preferir retorno por ligação
-              <input name="phone" value={form.phone} onChange={updateField} type="tel" autoComplete="tel" />
+              <input
+                name="phone"
+                value={form.phone}
+                onChange={updateField}
+                type="tel"
+                autoComplete="tel"
+                maxLength={FIELD_LIMITS.phone}
+                inputMode="tel"
+              />
             </label>
             <label>
               Assunto principal
@@ -358,12 +428,19 @@ function LegalContactChat() {
                 onChange={updateField}
                 required
                 rows="4"
+                maxLength={FIELD_LIMITS.message}
                 placeholder="Descreva o contexto, sem anexar documentos ou dados sensíveis."
               />
             </label>
             <label>
               Melhor período para retorno
-              <input name="schedule" value={form.schedule} onChange={updateField} placeholder="Ex.: manhã, tarde ou dia específico" />
+              <input
+                name="schedule"
+                value={form.schedule}
+                onChange={updateField}
+                maxLength={FIELD_LIMITS.schedule}
+                placeholder="Ex.: manhã, tarde ou dia específico"
+              />
             </label>
 
             <button className="button button-primary" type="submit" disabled={status === "sending"}>
@@ -385,7 +462,14 @@ function App() {
     <>
       <header className="site-header" aria-label="Navegação principal">
         <a className="brand" href="#inicio" aria-label="BRD Advocacia">
-          <img src={assetPath("assets/brand/logo-full-dark.png")} alt="BRD Advocacia" />
+          <img
+            src={assetPath("assets/brand/logo-full-dark.png")}
+            alt="BRD Advocacia"
+            width="148"
+            height="44"
+            decoding="async"
+            fetchpriority="high"
+          />
         </a>
         <button
           className="menu-toggle"
@@ -469,7 +553,15 @@ function App() {
           </div>
           <div className="partners-layout">
             <div className="partners-intro">
-              <img src={assetPath("assets/brand/icon-purple.png")} alt="" aria-hidden="true" />
+              <img
+                src={assetPath("assets/brand/icon-purple.png")}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                decoding="async"
+                width="72"
+                height="72"
+              />
               <ul className="team-list" aria-label="Princípios dos sócios BRD">
                 {teamPrinciples.map((principle) => (
                   <li key={principle}>{principle}</li>
@@ -480,7 +572,14 @@ function App() {
               {partners.map((partner) => (
                 <article className="partner-card" key={partner.name}>
                   <div className="partner-photo">
-                    <img src={assetPath(partner.image)} alt={`Foto de ${partner.name}`} loading="lazy" />
+                    <img
+                      src={assetPath(partner.image)}
+                      alt={`Foto de ${partner.name}`}
+                      loading="lazy"
+                      decoding="async"
+                      width="280"
+                      height="280"
+                    />
                   </div>
                   <div>
                     <span>{partner.role}</span>
@@ -558,7 +657,15 @@ function App() {
 
         <section className="section identity">
           <div className="identity-mark">
-            <img src={assetPath("assets/brand/icon-purple.png")} alt="" aria-hidden="true" />
+            <img
+              src={assetPath("assets/brand/icon-purple.png")}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
+              width="250"
+              height="250"
+            />
           </div>
           <div>
             <p className="eyebrow">Identidade</p>
@@ -585,7 +692,14 @@ function App() {
 
       <footer>
         <div className="footer-brand">
-          <img src={assetPath("assets/brand/logo-full-light.png")} alt="BRD Advocacia" />
+          <img
+            src={assetPath("assets/brand/logo-full-light.png")}
+            alt="BRD Advocacia"
+            loading="lazy"
+            decoding="async"
+            width="172"
+            height="52"
+          />
           <p>Advocacia empresarial em Marília/SP, com atuação consultiva, preventiva e contenciosa.</p>
         </div>
         <div className="footer-grid">
