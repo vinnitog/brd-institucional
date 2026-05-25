@@ -176,9 +176,13 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   assert.doesNotMatch(app, /window\.location\.assign/);
   assert.match(app, /openGmailCompose\(gmailComposeUrl\)/);
   assert.doesNotMatch(app, /window\.location\.href/);
-  assert.match(app, /reply_to: form\.email/);
+  assert.match(app, /reply_to: cleaned\.email/);
   assert.match(app, /buildChatEmailBody/);
   assert.match(app, /const gmailComposeUrl = buildGmailComposeUrl\(chatAnalysisEmail, subject, emailBody\)/);
+  assert.match(app, /FIELD_LIMITS/);
+  assert.match(app, /form\.name\.trim\(\)\.slice\(0, FIELD_LIMITS\.name\)/);
+  assert.match(app, /if \(form\.company\)/);
+  assert.match(app, /name="company"/);
   assert.doesNotMatch(app, /emailDraft|setEmailDraft/);
   assert.match(app, /brd-mascot-b\.svg/);
   assert.match(app, /Melhor período para retorno/);
