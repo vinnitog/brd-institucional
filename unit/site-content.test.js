@@ -273,6 +273,34 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.doesNotMatch(styles, /letter-spacing:\s*-/);
 });
 
+test("Motion adds restrained, accessible interface animation", () => {
+  const app = read("src/main.jsx");
+  const styles = read("src/styles.css");
+  const packageJson = JSON.parse(read("package.json"));
+
+  assert.ok(packageJson.dependencies.motion);
+  assert.match(app, /from "motion\/react"/);
+  assert.match(app, /<LazyMotion features=\{domAnimation\}>/);
+  assert.match(app, /<MotionConfig reducedMotion="user">/);
+  assert.match(app, /useReducedMotion\(\)/);
+  assert.match(app, /useAnimate\(\)/);
+  assert.match(app, /useInView\(scope, \{ once: true, amount: 0\.45 \}\)/);
+  assert.match(app, /useScroll\(\)/);
+  assert.match(app, /useSpring\(scrollYProgress/);
+  assert.match(app, /className="scroll-progress"/);
+  assert.match(app, /whileInView="visible"/);
+  assert.match(app, /viewport=\{sectionViewport\}/);
+  assert.match(app, /<AnimatePresence>/);
+  assert.match(app, /exit=\{\{ opacity: 0/);
+  assert.match(app, /const sequence = \[/);
+  assert.match(app, /className="metric-track"/);
+  assert.match(app, /className="metric-fill"/);
+  assert.match(app, /aria-label=\{`\$\{item\.value\} de 100`\}/);
+  assert.match(styles, /\.scroll-progress\s*\{/);
+  assert.match(styles, /transform-origin: 0 50%/);
+  assert.match(styles, /\.metric-fill\s*\{[\s\S]*transform-origin: left center/);
+});
+
 test("brand assets stay web friendly and chart stays lightweight", () => {
   const packageJson = JSON.parse(read("package.json"));
   assert.equal(packageJson.dependencies.recharts, undefined);
