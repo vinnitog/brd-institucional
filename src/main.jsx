@@ -1,9 +1,52 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import {
+  AnimatePresence,
+  LazyMotion,
+  MotionConfig,
+  domAnimation,
+  m,
+  useAnimate,
+  useInView,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+} from "motion/react";
 import { buildGmailComposeUrl } from "./emailLinks.mjs";
 import "./styles.css";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
+
+const motionEase = [0.22, 1, 0.36, 1];
+const revealItem = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: motionEase },
+  },
+};
+const revealGroup = {
+  hidden: {},
+  visible: {
+    transition: { delayChildren: 0.06, staggerChildren: 0.09 },
+  },
+};
+const sectionViewport = { once: true, amount: 0.16 };
+
+function RevealSection({ children, ...props }) {
+  return (
+    <m.section
+      initial="hidden"
+      whileInView="visible"
+      viewport={sectionViewport}
+      variants={revealGroup}
+      {...props}
+    >
+      {children}
+    </m.section>
+  );
+}
 
 const services = [
   {
@@ -53,6 +96,92 @@ const intelligenceData = [
   { name: "Eficiência", value: 84 },
   { name: "Governança", value: 90 },
 ];
+
+function IntelligenceTimeline() {
+  const [scope, animate] = useAnimate();
+  const isInView = useInView(scope, { once: true, amount: 0.45 });
+  const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (!isInView || shouldReduceMotion) return undefined;
+
+    const sequence = [
+      [".chart-copy", { opacity: 1, y: 0 }, { duration: 0.34, ease: motionEase }],
+    ];
+
+    intelligenceData.forEach((_, index) => {
+      const metric = `.metric-item:nth-child(${index + 1})`;
+
+      sequence.push(
+        [
+          `${metric} .metric-name`,
+          { opacity: 1, x: 0 },
+          { duration: 0.24, at: "-0.04", ease: motionEase },
+        ],
+        [
+          `${metric} .metric-fill`,
+          { scaleX: 1 },
+          { duration: 0.52, at: "-0.08", ease: motionEase },
+        ],
+        [
+          `${metric} .metric-value`,
+          { opacity: 1, y: 0 },
+          { duration: 0.22, at: "-0.2", ease: motionEase },
+        ],
+      );
+    });
+
+    const controls = animate(sequence);
+    return () => controls.stop();
+  }, [animate, isInView, shouldReduceMotion]);
+
+  const hiddenCopyStyle = shouldReduceMotion
+    ? undefined
+    : { opacity: 0, transform: "translateY(12px)" };
+  const hiddenNameStyle = shouldReduceMotion
+    ? undefined
+    : { opacity: 0, transform: "translateX(-12px)" };
+  const hiddenBarStyle = shouldReduceMotion ? undefined : { transform: "scaleX(0)" };
+  const hiddenValueStyle = shouldReduceMotion
+    ? undefined
+    : { opacity: 0, transform: "translateY(8px)" };
+
+  return (
+    <m.div
+      ref={scope}
+      className="chart-panel"
+      aria-label="Indicadores qualitativos do método BRD"
+      variants={revealItem}
+    >
+      <div className="chart-copy" style={hiddenCopyStyle}>
+        <span>Inteligência aplicada</span>
+        <strong>Da análise preventiva ao plano de ação</strong>
+      </div>
+      <ul className="metric-list" aria-label="Indicadores qualitativos do método BRD">
+        {intelligenceData.map((item) => (
+          <li className="metric-item" key={item.name}>
+            <span className="metric-name" style={hiddenNameStyle}>
+              {item.name}
+            </span>
+            <span className="metric-track" aria-hidden="true">
+              <span
+                className="metric-fill"
+                style={{ "--metric": `${item.value}%`, ...hiddenBarStyle }}
+              />
+            </span>
+            <strong
+              className="metric-value"
+              style={hiddenValueStyle}
+              aria-label={`${item.value} de 100`}
+            >
+              {item.value}
+            </strong>
+          </li>
+        ))}
+      </ul>
+    </m.div>
+  );
+}
 
 const teamPrinciples = [
   "Sócios presentes na estratégia",
@@ -189,15 +318,17 @@ function EmailIcon() {
 
 function EmailContactLink({ email, subject, body }) {
   return (
-    <a
+    <m.a
       className="email-contact-link"
       href={buildGmailComposeUrl(email, subject, body)}
       target="_blank"
       rel="noreferrer"
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.98 }}
     >
       <EmailIcon />
       <span>{email}</span>
-    </a>
+    </m.a>
   );
 }
 
@@ -242,6 +373,7 @@ function LegalContactChat() {
   const [form, setForm] = useState(initialChatForm);
   const [status, setStatus] = useState("idle");
   const [feedback, setFeedback] = useState("");
+  const shouldReduceMotion = useReducedMotion();
 
   const updateField = (event) => {
     const { name, value } = event.target;
@@ -318,13 +450,15 @@ function LegalContactChat() {
 
   return (
     <div className={`legal-chat ${isOpen ? "is-open" : ""}`}>
-      <button
+      <m.button
         className="legal-chat-toggle"
         type="button"
         aria-controls="legal-chat-panel"
         aria-expanded={isOpen}
         aria-label={isOpen ? "Fechar atendimento inicial" : "Abrir atendimento inicial"}
         onClick={() => setIsOpen((current) => !current)}
+        whileHover={{ x: -4 }}
+        whileTap={{ scale: 0.97 }}
       >
         <span className="legal-chat-toggle-icon" aria-hidden="true">
           <img
@@ -337,10 +471,27 @@ function LegalContactChat() {
           />
         </span>
         <span>Fale comigo!</span>
-      </button>
+      </m.button>
 
-      {isOpen ? (
-        <aside id="legal-chat-panel" className="legal-chat-panel" aria-label="Atendimento inicial BRD">
+      <AnimatePresence>
+        {isOpen ? (
+          <m.aside
+            id="legal-chat-panel"
+            className="legal-chat-panel"
+            aria-label="Atendimento inicial BRD"
+            initial={{
+              opacity: 0,
+              x: shouldReduceMotion ? 0 : 28,
+              scale: shouldReduceMotion ? 1 : 0.985,
+            }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{
+              opacity: 0,
+              x: shouldReduceMotion ? 0 : 18,
+              scale: shouldReduceMotion ? 1 : 0.99,
+            }}
+            transition={{ duration: 0.26, ease: motionEase }}
+          >
           <div className="legal-chat-header">
             <div>
               <span>Atendimento inicial</span>
@@ -446,10 +597,22 @@ function LegalContactChat() {
             <button className="button button-primary" type="submit" disabled={status === "sending"}>
               {status === "sending" ? "Enviando..." : "Enviar para análise"}
             </button>
-            {feedback ? <p className={`legal-chat-feedback ${status}`}>{feedback}</p> : null}
+            <AnimatePresence mode="wait">
+              {feedback ? (
+                <m.p
+                  className={`legal-chat-feedback ${status}`}
+                  initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {feedback}
+                </m.p>
+              ) : null}
+            </AnimatePresence>
           </form>
-        </aside>
-      ) : null}
+          </m.aside>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }
@@ -457,10 +620,31 @@ function LegalContactChat() {
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const closeMenu = () => setIsMenuOpen(false);
+  const shouldReduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const smoothScrollProgress = useSpring(scrollYProgress, {
+    stiffness: 180,
+    damping: 28,
+    mass: 0.24,
+  });
 
   return (
-    <>
-      <header className="site-header" aria-label="Navegação principal">
+    <LazyMotion features={domAnimation}>
+      <MotionConfig reducedMotion="user">
+        {!shouldReduceMotion ? (
+          <m.div
+            className="scroll-progress"
+            style={{ scaleX: smoothScrollProgress }}
+            aria-hidden="true"
+          />
+        ) : null}
+        <m.header
+          className="site-header"
+          aria-label="Navegação principal"
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.52, ease: motionEase }}
+        >
         <a className="brand" href="#inicio" aria-label="BRD Advocacia">
           <img
             src={assetPath("assets/brand/logo-full-dark.png")}
@@ -471,18 +655,19 @@ function App() {
             fetchpriority="high"
           />
         </a>
-        <button
+        <m.button
           className="menu-toggle"
           type="button"
           aria-controls="main-navigation"
           aria-expanded={isMenuOpen}
           aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
           onClick={() => setIsMenuOpen((current) => !current)}
+          whileTap={{ scale: 0.94 }}
         >
           <span aria-hidden="true" />
           <span aria-hidden="true" />
           <span aria-hidden="true" />
-        </button>
+        </m.button>
         <nav id="main-navigation" className={isMenuOpen ? "is-open" : ""}>
           <a href="#sobre" onClick={closeMenu}>Sobre</a>
           <a href="#socios" onClick={closeMenu}>Sócios</a>
@@ -490,45 +675,57 @@ function App() {
           <a href="#inteligencia" onClick={closeMenu}>Inteligência</a>
           <a href="#contato" onClick={closeMenu}>Contato</a>
         </nav>
-      </header>
+        </m.header>
 
       <main id="inicio">
         <section className="hero" aria-labelledby="hero-title">
-          <div className="hero-content">
-            <h1 id="hero-title">Decisões jurídicas com visão de negócio.</h1>
+          <m.div className="hero-content" initial="hidden" animate="visible" variants={revealGroup}>
+            <m.h1 id="hero-title" variants={revealItem}>
+              Decisões jurídicas com visão de negócio.
+            </m.h1>
             <p className="sr-only">Guiados pela tradição. Impulsionados pela inovação.</p>
-            <div className="hero-actions" aria-label="Ações principais">
-              <a className="button button-primary" href="#contato">
+            <m.div className="hero-actions" aria-label="Ações principais" variants={revealItem}>
+              <m.a
+                className="button button-primary"
+                href="#contato"
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 Falar com o escritório
-              </a>
-              <a className="button button-ghost" href="#expertises">
+              </m.a>
+              <m.a
+                className="button button-ghost"
+                href="#expertises"
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 Ver expertises
-              </a>
-            </div>
-          </div>
+              </m.a>
+            </m.div>
+          </m.div>
         </section>
 
-        <section className="intro-band" aria-label="Resumo institucional">
-          <div>
+        <RevealSection className="intro-band" aria-label="Resumo institucional">
+          <m.div variants={revealItem}>
             <span>Atuação</span>
             <strong>Consultiva, preventiva e contenciosa</strong>
-          </div>
-          <div>
+          </m.div>
+          <m.div variants={revealItem}>
             <span>Perfil</span>
             <strong>Banca empresarial com sócios próximos</strong>
-          </div>
-          <div>
+          </m.div>
+          <m.div variants={revealItem}>
             <span>Foco</span>
             <strong>Segurança jurídica para decisões relevantes</strong>
-          </div>
-        </section>
+          </m.div>
+        </RevealSection>
 
-        <section className="section split" id="sobre">
-          <div className="section-copy">
+        <RevealSection className="section split" id="sobre">
+          <m.div className="section-copy" variants={revealItem}>
             <p className="eyebrow">O escritório</p>
             <h2>Uma banca construída por sócios que atuam junto ao cliente.</h2>
-          </div>
-          <div className="body-copy">
+          </m.div>
+          <m.div className="body-copy" variants={revealItem}>
             <p>
               O BRD une experiência jurídica, governança e uma leitura prática dos desafios
               empresariais. O escritório preserva o rigor técnico da advocacia tradicional e
@@ -539,20 +736,20 @@ function App() {
               escritório, mas a entrega é feita com os demais sócios, em uma atuação coordenada,
               próxima e multidisciplinar.
             </p>
-          </div>
-        </section>
+          </m.div>
+        </RevealSection>
 
-        <section className="section partners" id="socios">
-          <div className="section-heading partners-heading">
+        <RevealSection className="section partners" id="socios">
+          <m.div className="section-heading partners-heading" variants={revealItem}>
             <p className="eyebrow">Sócios</p>
             <h2>Perfis que combinam proximidade, técnica e visão empresarial.</h2>
             <p>
               A seção parte das referências institucionais disponíveis e apresenta o time com
               sobriedade, sem antecipar currículos ou credenciais ainda não documentadas no site.
             </p>
-          </div>
-          <div className="partners-layout">
-            <div className="partners-intro">
+          </m.div>
+          <m.div className="partners-layout" variants={revealGroup}>
+            <m.div className="partners-intro" variants={revealItem}>
               <img
                 src={assetPath("assets/brand/icon-purple.png")}
                 alt=""
@@ -567,10 +764,16 @@ function App() {
                   <li key={principle}>{principle}</li>
                 ))}
               </ul>
-            </div>
-            <div className="partners-grid">
+            </m.div>
+            <m.div className="partners-grid" variants={revealGroup}>
               {partners.map((partner) => (
-                <article className="partner-card" key={partner.name}>
+                <m.article
+                  className="partner-card"
+                  key={partner.name}
+                  variants={revealItem}
+                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.24, ease: motionEase }}
+                >
                   <div className="partner-photo">
                     <img
                       src={assetPath(partner.image)}
@@ -586,77 +789,81 @@ function App() {
                     <h3>{partner.name}</h3>
                     <p>{partner.focus}</p>
                   </div>
-                </article>
+                </m.article>
               ))}
-            </div>
-          </div>
-        </section>
+            </m.div>
+          </m.div>
+        </RevealSection>
 
-        <section className="section" id="expertises">
-          <div className="section-heading">
+        <RevealSection className="section" id="expertises">
+          <m.div className="section-heading" variants={revealItem}>
             <p className="eyebrow">Expertises</p>
             <h2>Especialização jurídica conectada aos setores que movem empresas.</h2>
-          </div>
-          <div className="services-grid">
+          </m.div>
+          <m.div className="services-grid" variants={revealGroup}>
             {services.map((service, index) => (
-              <article className="service-card" key={service.title}>
+              <m.article
+                className="service-card"
+                key={service.title}
+                variants={revealItem}
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.22, ease: motionEase }}
+              >
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <h3>{service.title}</h3>
                 <p>{service.text}</p>
-              </article>
+              </m.article>
             ))}
-          </div>
-        </section>
+          </m.div>
+        </RevealSection>
 
-        <section className="section method" id="metodo">
-          <div className="section-copy">
+        <RevealSection className="section method" id="metodo">
+          <m.div className="section-copy" variants={revealItem}>
             <p className="eyebrow">Método BRD</p>
             <h2>Tradição jurídica com operação inteligente.</h2>
-          </div>
-          <div className="method-layout">
-            <div className="pillars-grid">
+          </m.div>
+          <m.div className="method-layout" variants={revealGroup}>
+            <m.div className="pillars-grid" variants={revealGroup}>
               {pillars.map((pillar) => (
-                <article className="pillar" key={pillar.title}>
+                <m.article
+                  className="pillar"
+                  key={pillar.title}
+                  variants={revealItem}
+                  whileHover={{ x: 5 }}
+                >
                   <h3>{pillar.title}</h3>
                   <p>{pillar.text}</p>
-                </article>
+                </m.article>
               ))}
-            </div>
-            <div className="chart-panel" aria-label="Indicadores qualitativos do método BRD">
-              <div className="chart-copy">
-                <span>Inteligência aplicada</span>
-                <strong>Da análise preventiva ao plano de ação</strong>
-              </div>
-              <ul className="metric-list" aria-label="Indicadores qualitativos do método BRD">
-                {intelligenceData.map((item) => (
-                  <li className="metric-item" key={item.name} style={{ "--metric": `${item.value}%` }}>
-                    <span>{item.name}</span>
-                    <strong>{item.value}</strong>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
+            </m.div>
+            <IntelligenceTimeline />
+          </m.div>
+        </RevealSection>
 
-        <section className="section intelligence" id="inteligencia">
-          <div className="section-heading">
+        <RevealSection className="section intelligence" id="inteligencia">
+          <m.div className="section-heading" variants={revealItem}>
             <p className="eyebrow">Inteligência jurídica</p>
             <h2>Atualização, análise e prevenção para decisões que importam.</h2>
-          </div>
-          <div className="insights-grid">
+          </m.div>
+          <m.div className="insights-grid" variants={revealGroup}>
             {insights.map((insight) => (
-              <article className="insight-card" key={insight.title}>
+              <m.article
+                className="insight-card"
+                key={insight.title}
+                variants={revealItem}
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.22, ease: motionEase }}
+              >
                 <span>{insight.label}</span>
                 <h3>{insight.title}</h3>
                 <a href="#contato">Conversar sobre o tema</a>
-              </article>
+              </m.article>
             ))}
-          </div>
-        </section>
+          </m.div>
+        </RevealSection>
 
-        <section className="section identity">
-          <div className="identity-mark">
+        <RevealSection className="section identity">
+          <m.div className="identity-mark" variants={revealItem}>
             <img
               src={assetPath("assets/brand/icon-purple.png")}
               alt=""
@@ -666,8 +873,8 @@ function App() {
               width="250"
               height="250"
             />
-          </div>
-          <div>
+          </m.div>
+          <m.div variants={revealItem}>
             <p className="eyebrow">Identidade</p>
             <h2>Elegância sóbria, ritmo digital e presença institucional.</h2>
             <p>
@@ -675,23 +882,27 @@ function App() {
               atualidade, mantendo uma linguagem institucional consistente em todos os pontos
               de contato.
             </p>
-          </div>
-        </section>
+          </m.div>
+        </RevealSection>
 
 
-        <section className="contact" id="contato" aria-labelledby="contact-title">
-          <div>
+        <RevealSection
+          className="contact"
+          id="contato"
+          aria-labelledby="contact-title"
+        >
+          <m.div variants={revealItem}>
             <p className="eyebrow">Contato</p>
             <h2 id="contact-title">Vamos conversar sobre o próximo passo jurídico da sua empresa.</h2>
-          </div>
-          <div className="contact-actions">
+          </m.div>
+          <m.div className="contact-actions" variants={revealItem}>
             <EmailContactLink email={contactEmail} subject={contactEmailSubject} body={contactEmailBody} />
-          </div>
-        </section>
+          </m.div>
+        </RevealSection>
       </main>
 
-      <footer>
-        <div className="footer-brand">
+      <m.footer initial="hidden" whileInView="visible" viewport={sectionViewport} variants={revealGroup}>
+        <m.div className="footer-brand" variants={revealItem}>
           <img
             src={assetPath("assets/brand/logo-full-light.png")}
             alt="BRD Advocacia"
@@ -701,8 +912,8 @@ function App() {
             height="52"
           />
           <p>Advocacia empresarial em Marília/SP, com atuação consultiva, preventiva e contenciosa.</p>
-        </div>
-        <div className="footer-grid">
+        </m.div>
+        <m.div className="footer-grid" variants={revealItem}>
           <address>
             <span className="footer-kicker">Localização</span>
             Rua Sete de Setembro, n.° 1359<br />
@@ -732,11 +943,12 @@ function App() {
               ))}
             </nav>
           </div>
-        </div>
-      </footer>
+        </m.div>
+      </m.footer>
 
       <LegalContactChat />
-    </>
+      </MotionConfig>
+    </LazyMotion>
   );
 }
 
