@@ -337,6 +337,9 @@ test("BRD mascot asset is vector, branded and chatbot-ready", () => {
 
 test("github pages deployment builds the dist artifact", () => {
   const workflow = read(".github/workflows/pages.yml");
+  assert.match(workflow, /branches:\s*\n\s*- main/);
+  assert.doesNotMatch(workflow, /^\s*- develop\s*$/m);
+  assert.match(workflow, /workflow_dispatch:/);
   assert.match(workflow, /npm ci/);
   assert.match(workflow, /npm run build:pages/);
   assert.match(workflow, /actions\/deploy-pages@v4/);
