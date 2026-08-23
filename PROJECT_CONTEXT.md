@@ -4,15 +4,15 @@ Gerado em: 2026-05-20 22:25:12
 
 ## Descricao
 
-site institucional para o escritório de advocacia da minha esposa, chamado BRD. Site com design moderno e elegante e que ressalta os valores e missão do escritório, cuja o lema é "guiados pela tradição e impulsionados pela inovação".
+Site institucional do escritório BRD Advocacia. A experiência deve comunicar tradição, inovação e profissionalismo com linguagem clara, visual moderno e elegante.
 
 ## Objetivo
 
-ganhar visibilidade e identidade na web através do site institucional, serem vistos e passar profissionalismo.
+Consolidar a identidade digital do escritório, ampliar sua visibilidade e oferecer um primeiro contato institucional seguro.
 
 ## Publico Alvo
 
-Nao definido
+Empresas, gestores e profissionais que buscam assessoria jurídica empresarial, preventiva ou contenciosa.
 
 ## Caracteristicas Informadas
 

@@ -2,7 +2,7 @@
 
 ## Workspace Obrigatorio
 
-O workspace correto deste projeto e:
+O workspace correto deste projeto e a raiz do repositorio clonado:
 
 ```text
 <workspace>/brd-institucional
@@ -13,6 +13,7 @@ Antes de qualquer leitura, edicao, teste, commit ou push, confirme que o comando
 ## Contexto Do Projeto
 
 Leia `PROJECT_CONTEXT.md` antes de alterar codigo, testes, docs ou configuracoes.
+Leia `SKILLS_PROFILE.md` antes de executar `lgpd-audit`, `lgpd-privacy-policy` ou `impeccable`.
 
 ## Stack Inicial
 

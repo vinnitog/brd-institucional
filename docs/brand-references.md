@@ -2,11 +2,10 @@
 
 Documento de acompanhamento criado durante o desenvolvimento do site institucional.
 
-## Origem Local
+## Fontes Da Identidade
 
-- Pasta consultada: `<workspace>/BRD-identidade-visual`
-- Índice interno do projeto: `BRAND.ASSETS.local.md`
-- Perfil de referencia: `https://www.instagram.com/brd.adv/`
+- Materiais institucionais fornecidos pelo escritório.
+- Perfil oficial de referência: `https://www.instagram.com/brd.adv/`.
 
 ## Identidade Visual
 
@@ -30,10 +29,10 @@ Documento de acompanhamento criado durante o desenvolvimento do site institucion
 
 ## Dados De Contato E Presença Digital
 
-- Localização extraída de `localizacao-google-info-card.png`: Rua Sete de Setembro, n.° 1359, Senador Salgado Filho, Marília/SP, 17502-020.
-- Telefone extraído de `localizacao-google-info-card.png`: (14) 99832-5395.
-- Redes sociais informadas pelo usuário em 2026-05-21: Instagram, LinkedIn, YouTube e Facebook oficiais do BRD.
-- E-mail `contato@brd.adv.br` aplicado como canal institucional inicial e deve ser confirmado antes de publicação definitiva.
+- Localização institucional: Rua Sete de Setembro, n.° 1359, Senador Salgado Filho, Marília/SP, 17502-020.
+- Telefone institucional: (14) 99832-5395.
+- Presença oficial: Instagram, LinkedIn, YouTube e Facebook do BRD.
+- E-mail institucional: `contato@brd.adv.br`.
 
 ## Conteúdo Institucional Extraído Das Referências
 
@@ -79,4 +78,4 @@ Aplicação no BRD:
 - Foi adicionada uma seção de sócios com perfis sóbrios baseados nas referências locais disponíveis: Luís Bernardo Júnior, Letícia Barriento, André Luis e Fernanda Félix.
 - Foi adicionada uma seção de inteligência jurídica inspirada nos hubs editoriais das referências, mas em formato inicial, sem simular publicações ou prêmios inexistentes.
 - O rodapé passou a concentrar localização, rota no Google Maps, telefone, e-mail e redes sociais oficiais.
-- Ajuste posterior em 2026-05-21: Maria foi removida da seção de sócios, o hero mobile foi reposicionado para reduzir a sensação de vazio, a seção de sócios voltou para alinhamento à esquerda e o rodapé recebeu ícones minimalistas para rota e redes sociais.
+- Refinamentos posteriores reposicionaram o hero mobile, ajustaram a seção de sócios e adicionaram ícones minimalistas para rota e redes sociais.

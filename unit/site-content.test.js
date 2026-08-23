@@ -42,8 +42,8 @@ test("brand references capture the official identity signals", () => {
   assert.match(references, /Mascote BRD/);
   assert.match(references, /brd-mascot-b\.svg/);
   assert.match(references, /futuro chatbot/);
-  assert.match(references, /C:\\Users\\Togszera\\Desktop\\BRD-identidade-visual/);
-  assert.match(references, /Maria foi removida da seção de sócios/);
+  assert.doesNotMatch(references, /C:\\Users\\|BRD-identidade-visual/);
+  assert.doesNotMatch(references, /Maria foi removida/);
 });
 
 test("homepage contains the core BRD institutional content", () => {
@@ -52,7 +52,7 @@ test("homepage contains the core BRD institutional content", () => {
     "BRD Advocacia",
     "Expertises",
     "Sócios",
-    "Inteligência jurídica",
+    "Inteligência",
     "Recuperação de crédito",
     "Auditorias",
     "Adequação à LGPD",
@@ -105,7 +105,7 @@ test("homepage contains the core BRD institutional content", () => {
   assert.doesNotMatch(app, /mailto:/);
   assert.doesNotMatch(app, /buildOutlookComposeUrl|Enviar via Gmail|Enviar via Outlook/);
   assert.match(app, /contactEmail = "contato@brd\.adv\.br"/);
-  assert.match(app, /chatAnalysisEmail = "vinnitog@gmail\.com"/);
+  assert.doesNotMatch(app, /chatAnalysisEmail|@gmail\.com/);
   assert.match(app, /function MapPinIcon/);
   assert.match(app, /function SocialIcon/);
   assert.match(app, /icon: "instagram"/);
@@ -121,7 +121,7 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /className=\{`legal-chat \$\{isOpen \? "is-open" : ""\}`\}/);
   assert.match(app, /assets\/brand\/brd-mascot-b\.svg/);
   assert.match(app, /aria-controls="legal-chat-panel"/);
-  assert.match(app, /aria-label="Atendimento inicial BRD"/);
+  assert.match(app, /aria-labelledby="legal-chat-title"/);
   assert.doesNotMatch(app, /Abrir rota no Google Maps/);
   assert.doesNotMatch(app, /name: "Maria"/);
   assert.match(app, /target="_blank"\s+rel="noreferrer"/);
@@ -151,8 +151,9 @@ test("homepage offers a legally safe guided first-contact chat", () => {
     "Dados do contato",
     "Observação de segurança",
     "VITE_CONTACT_FORM_ENDPOINT",
-    "VITE_CONTACT_FORM_ACCESS_KEY",
-    "Agradecemos seu contato!",
+    "Usaremos os dados informados",
+    "direitos de privacidade",
+    "Solicitação enviada",
   ]) {
     assert.match(app, new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   }
@@ -168,17 +169,15 @@ test("homepage offers a legally safe guided first-contact chat", () => {
     assert.match(app, new RegExp(field));
   }
 
-  assert.match(app, /fetch\(chatFormEndpoint/);
-  assert.match(app, /to_email: chatAnalysisEmail/);
-  assert.doesNotMatch(app, /to_email: contactEmail/);
-  assert.match(app, /function openGmailCompose/);
-  assert.match(app, /window\.open\(url, "_blank", "noopener,noreferrer"\)/);
+  assert.match(app, /deliverContact\(\{/);
+  assert.doesNotMatch(app, /VITE_CONTACT_FORM_ACCESS_KEY|access_key|to_email/);
+  assert.match(app, /import \{ deliverContact, resolveContactEndpoint \} from "\.\/contactDelivery\.mjs"/);
   assert.doesNotMatch(app, /window\.location\.assign/);
-  assert.match(app, /openGmailCompose\(gmailComposeUrl\)/);
+  assert.match(app, /gmailComposeUrl,/);
   assert.doesNotMatch(app, /window\.location\.href/);
   assert.match(app, /reply_to: cleaned\.email/);
   assert.match(app, /buildChatEmailBody/);
-  assert.match(app, /const gmailComposeUrl = buildGmailComposeUrl\(chatAnalysisEmail, subject, emailBody\)/);
+  assert.match(app, /const gmailComposeUrl = buildGmailComposeUrl\(contactEmail, subject, emailBody\)/);
   assert.match(app, /FIELD_LIMITS/);
   assert.match(app, /form\.name\.trim\(\)\.slice\(0, FIELD_LIMITS\.name\)/);
   assert.match(app, /if \(form\.company\)/);
@@ -187,7 +186,16 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   assert.match(app, /brd-mascot-b\.svg/);
   assert.match(app, /Melhor período para retorno/);
   assert.match(app, /placeholder="Ex\.: manhã, tarde ou dia específico"/);
-  assert.doesNotMatch(app, /Use o e-mail \$\{chatAnalysisEmail\}/);
+  assert.match(app, /requestAnimationFrame\(\(\) => toggleRef\.current\?\.focus\(\)\)/);
+  assert.match(app, /event\.key === "Escape"/);
+  assert.match(app, /id="contact-privacy-notice"/);
+  assert.match(app, /VITE_PRIVACY_POLICY_URL/);
+  assert.match(app, /resolveContactEndpoint\(configuredChatFormEndpoint, privacyPolicyUrl\)/);
+  assert.match(app, /delivery\.status === "sent"/);
+  assert.match(app, /delivery\.status === "draft"/);
+  assert.match(app, /delivery\.reason === "popup"/);
+  assert.match(app, /role=\{status === "error" \? "alert" : "status"\}/);
+  assert.match(app, /O navegador bloqueou o Gmail/);
   assert.doesNotMatch(app, /indeniza[cç][aã]o garantida|caso ganho|resultado garantido/i);
 });
 
@@ -268,9 +276,151 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /\.email-contact-link/);
   assert.match(styles, /\.email-contact-link svg/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.email-contact-link\s*\{[\s\S]*width: 100%/);
-  assert.match(styles, /animation-delay: 0\.01ms !important/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)[\s\S]*\.legal-chat-toggle-icon img\s*\{[\s\S]*animation: none/);
+  assert.doesNotMatch(styles, /animation-delay: 0\.01ms !important/);
+  assert.match(styles, /\.legal-chat-privacy/);
+  assert.match(styles, /font-size: 1rem/);
   assert.doesNotMatch(styles, /overflow-x: auto/);
   assert.doesNotMatch(styles, /letter-spacing:\s*-/);
+});
+
+test("external window helper reports popup success and failure", async () => {
+  const { openExternalWindow } = await importModule("src/externalLinks.mjs");
+  const calls = [];
+  const navigations = [];
+  const popup = {
+    opener: {},
+    location: { replace: (url) => navigations.push(url) },
+  };
+
+  assert.equal(
+    openExternalWindow("https://example.com", (...args) => {
+      calls.push(args);
+      return popup;
+    }),
+    true,
+  );
+  assert.deepEqual(calls, [["", "_blank"]]);
+  assert.equal(popup.opener, null);
+  assert.deepEqual(navigations, ["https://example.com"]);
+  assert.equal(openExternalWindow("https://example.com", () => null), false);
+  assert.equal(openExternalWindow("https://example.com", null), false);
+
+  let closeCalls = 0;
+  const brokenPopup = {
+    opener: {},
+    location: {
+      replace: () => {
+        throw new Error("navigation blocked");
+      },
+    },
+    close: () => {
+      closeCalls += 1;
+    },
+  };
+
+  assert.equal(openExternalWindow("https://example.com", () => brokenPopup), false);
+  assert.equal(brokenPopup.opener, null);
+  assert.equal(closeCalls, 1);
+});
+
+test("contact delivery gates endpoints and reports every transport outcome", async () => {
+  const { deliverContact, resolveContactEndpoint } = await importModule("src/contactDelivery.mjs");
+
+  assert.equal(resolveContactEndpoint("https://api.example/contact", "https://example/privacy"), "https://api.example/contact");
+  assert.equal(resolveContactEndpoint("https://api.example/contact", ""), "");
+  assert.equal(resolveContactEndpoint("", "https://example/privacy"), "");
+
+  const requests = [];
+  const base = {
+    endpoint: "https://api.example/contact",
+    payload: { name: "Pessoa", message: "Olá" },
+    gmailComposeUrl: "https://mail.google.com/draft",
+  };
+
+  assert.deepEqual(
+    await deliverContact(base, {
+      fetchFn: async (...args) => {
+        requests.push(args);
+        return { ok: true };
+      },
+    }),
+    { status: "sent" },
+  );
+  assert.equal(requests[0][0], base.endpoint);
+  assert.equal(requests[0][1].method, "POST");
+  assert.deepEqual(JSON.parse(requests[0][1].body), base.payload);
+
+  assert.deepEqual(
+    await deliverContact(base, { fetchFn: async () => ({ ok: false }) }),
+    { status: "error", reason: "network" },
+  );
+  assert.deepEqual(
+    await deliverContact(base, { fetchFn: async () => { throw new Error("offline"); } }),
+    { status: "error", reason: "network" },
+  );
+
+  const gmailOnly = { ...base, endpoint: "" };
+  assert.deepEqual(
+    await deliverContact(gmailOnly, {
+      openWindow: () => ({ opener: {}, location: { replace: () => {} } }),
+    }),
+    { status: "draft" },
+  );
+  assert.deepEqual(
+    await deliverContact(gmailOnly, { openWindow: () => null }),
+    { status: "error", reason: "popup" },
+  );
+});
+
+test("contact delivery uses exactly one transport per attempt", async () => {
+  const { deliverContact } = await importModule("src/contactDelivery.mjs");
+  const request = {
+    payload: { name: "Pessoa", message: "Olá" },
+    gmailComposeUrl: "https://mail.google.com/draft",
+  };
+  let fetchCalls = 0;
+  let popupCalls = 0;
+
+  assert.deepEqual(
+    await deliverContact(
+      { ...request, endpoint: "https://api.example/contact" },
+      {
+        fetchFn: async () => {
+          fetchCalls += 1;
+          return { ok: true };
+        },
+        openWindow: () => {
+          popupCalls += 1;
+          return null;
+        },
+      },
+    ),
+    { status: "sent" },
+  );
+  assert.equal(fetchCalls, 1);
+  assert.equal(popupCalls, 0);
+
+  fetchCalls = 0;
+  popupCalls = 0;
+  assert.deepEqual(
+    await deliverContact(
+      { ...request, endpoint: "" },
+      {
+        fetchFn: async () => {
+          fetchCalls += 1;
+          return { ok: true };
+        },
+        openWindow: () => {
+          popupCalls += 1;
+          return { opener: {}, location: { replace: () => {} } };
+        },
+      },
+    ),
+    { status: "draft" },
+  );
+  assert.equal(fetchCalls, 0);
+  assert.equal(popupCalls, 1);
 });
 
 test("Motion adds restrained, accessible interface animation", () => {
