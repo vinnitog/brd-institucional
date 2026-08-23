@@ -2,7 +2,7 @@
 
 ## Workspace Obrigatorio
 
-Use sempre este workspace:
+Use sempre a raiz do repositorio clonado:
 
 ```text
 <workspace>/brd-institucional
@@ -13,6 +13,7 @@ Antes de ler, editar, testar, commitar ou fazer push, confirme que o terminal es
 ## Contexto Compartilhado
 
 Leia `PROJECT_CONTEXT.md` antes de alterar o projeto. Ele e a fonte versionada de objetivo, stack e decisoes iniciais.
+Leia `SKILLS_PROFILE.md` antes de executar `lgpd-audit`, `lgpd-privacy-policy` ou `impeccable`.
 
 ## Stack Inicial
 

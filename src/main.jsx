@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   AnimatePresence,
@@ -13,6 +13,7 @@ import {
   useSpring,
 } from "motion/react";
 import { buildGmailComposeUrl } from "./emailLinks.mjs";
+import { deliverContact, resolveContactEndpoint } from "./contactDelivery.mjs";
 import "./styles.css";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
@@ -239,22 +240,22 @@ const socialLinks = [
   {
     label: "LinkedIn",
     icon: "linkedin",
-    href: "https://www.linkedin.com/company/bernardo-advogados-associados-brd/posts/?feedView=all",
+    href: "https://www.linkedin.com/company/bernardo-advogados-associados-brd/",
   },
   { label: "YouTube", icon: "youtube", href: "https://www.youtube.com/channel/UCBEoHdFSNDyOLZkpyo5bTLg" },
   {
     label: "Facebook",
     icon: "facebook",
-    href: "https://www.facebook.com/people/Bernardo-Advogados-Associados/61570437647099/?mibextid=wwXIfr&rdid=546vsHgdDovVzc5O&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F16ZTurjKJJ%2F%3Fmibextid%3DwwXIfr",
+    href: "https://www.facebook.com/people/Bernardo-Advogados-Associados/61570437647099/",
   },
 ];
 
 const contactEmail = "contato@brd.adv.br";
-const chatAnalysisEmail = "contato@brd.adv.br";
 const contactEmailSubject = "Contato pelo site BRD";
 const contactEmailBody = "Ola, equipe BRD.\n\nGostaria de conversar sobre uma demanda juridica da minha empresa.";
-const chatFormEndpoint = import.meta.env.VITE_CONTACT_FORM_ENDPOINT ?? "";
-const chatFormAccessKey = import.meta.env.VITE_CONTACT_FORM_ACCESS_KEY ?? "";
+const configuredChatFormEndpoint = import.meta.env.VITE_CONTACT_FORM_ENDPOINT ?? "";
+const privacyPolicyUrl = import.meta.env.VITE_PRIVACY_POLICY_URL ?? "";
+const chatFormEndpoint = resolveContactEndpoint(configuredChatFormEndpoint, privacyPolicyUrl);
 
 const contactTopics = [
   "Recuperação de crédito",
@@ -332,10 +333,6 @@ function EmailContactLink({ email, subject, body }) {
   );
 }
 
-function openGmailCompose(url) {
-  window.open(url, "_blank", "noopener,noreferrer");
-}
-
 function MapPinIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -373,7 +370,30 @@ function LegalContactChat() {
   const [form, setForm] = useState(initialChatForm);
   const [status, setStatus] = useState("idle");
   const [feedback, setFeedback] = useState("");
+  const toggleRef = useRef(null);
+  const closeButtonRef = useRef(null);
   const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    closeButtonRef.current?.focus();
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        requestAnimationFrame(() => toggleRef.current?.focus());
+      }
+    };
+
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [isOpen]);
+
+  const closeChat = () => {
+    setIsOpen(false);
+    requestAnimationFrame(() => toggleRef.current?.focus());
+  };
 
   const updateField = (event) => {
     const { name, value } = event.target;
@@ -404,11 +424,9 @@ function LegalContactChat() {
 
     const emailBody = buildChatEmailBody(cleaned);
     const subject = `[Site BRD] Novo contato - ${cleaned.topic || "Atendimento inicial"}`;
-    const gmailComposeUrl = buildGmailComposeUrl(chatAnalysisEmail, subject, emailBody);
+    const gmailComposeUrl = buildGmailComposeUrl(contactEmail, subject, emailBody);
     const payload = {
-      ...(chatFormAccessKey ? { access_key: chatFormAccessKey } : {}),
       subject,
-      to_email: chatAnalysisEmail,
       from_name: cleaned.name,
       reply_to: cleaned.email,
       name: cleaned.name,
@@ -419,38 +437,36 @@ function LegalContactChat() {
       message: emailBody,
     };
 
-    try {
-      if (chatFormEndpoint) {
-        const response = await fetch(chatFormEndpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+    const delivery = await deliverContact({
+      endpoint: chatFormEndpoint,
+      payload,
+      gmailComposeUrl,
+    });
 
-        if (!response.ok) {
-          throw new Error("Contact form request failed");
-        }
-
-        openGmailCompose(gmailComposeUrl);
-        setStatus("sent");
-        setFeedback("Agradecemos seu contato!");
-        setForm(initialChatForm);
-        return;
-      }
-
-      openGmailCompose(gmailComposeUrl);
+    if (delivery.status === "sent") {
       setStatus("sent");
-      setFeedback("Agradecemos seu contato!");
+      setFeedback("Solicitação enviada. Nossa equipe retornará pelo canal informado.");
       setForm(initialChatForm);
-    } catch {
-      setStatus("error");
-      setFeedback(`Não foi possível enviar agora. Use o e-mail ${contactEmail} ou tente novamente em instantes.`);
+      return;
     }
+
+    if (delivery.status === "draft") {
+      setStatus("sent");
+      setFeedback("Abrimos um rascunho no Gmail para você revisar e enviar.");
+      setForm(initialChatForm);
+      return;
+    }
+
+    setStatus("error");
+    setFeedback(delivery.reason === "popup"
+      ? `O navegador bloqueou o Gmail. Escreva para ${contactEmail} ou permita pop-ups e tente novamente.`
+      : `Não foi possível enviar agora. Use o e-mail ${contactEmail} ou tente novamente em instantes.`);
   };
 
   return (
     <div className={`legal-chat ${isOpen ? "is-open" : ""}`}>
       <m.button
+        ref={toggleRef}
         className="legal-chat-toggle"
         type="button"
         aria-controls="legal-chat-panel"
@@ -478,7 +494,7 @@ function LegalContactChat() {
           <m.aside
             id="legal-chat-panel"
             className="legal-chat-panel"
-            aria-label="Atendimento inicial BRD"
+            aria-labelledby="legal-chat-title"
             initial={{
               opacity: 0,
               x: shouldReduceMotion ? 0 : 28,
@@ -495,10 +511,15 @@ function LegalContactChat() {
           <div className="legal-chat-header">
             <div>
               <span>Atendimento inicial</span>
-              <strong>BRD Advocacia</strong>
+              <strong id="legal-chat-title">BRD Advocacia</strong>
             </div>
-            <button type="button" aria-label="Fechar atendimento inicial" onClick={() => setIsOpen(false)}>
-              <span aria-hidden="true">x</span>
+            <button
+              ref={closeButtonRef}
+              type="button"
+              aria-label="Fechar atendimento inicial"
+              onClick={closeChat}
+            >
+              <span aria-hidden="true">×</span>
             </button>
           </div>
 
@@ -513,7 +534,12 @@ function LegalContactChat() {
             </p>
           </div>
 
-          <form className="legal-chat-form" onSubmit={handleSubmit} noValidate={false}>
+          <form
+            className="legal-chat-form"
+            onSubmit={handleSubmit}
+            aria-describedby="contact-privacy-notice"
+          >
+            <p className="legal-chat-required">Campos marcados como obrigatórios precisam ser preenchidos.</p>
             <div className="legal-chat-honeypot" aria-hidden="true">
               <label>
                 Empresa
@@ -527,7 +553,7 @@ function LegalContactChat() {
               </label>
             </div>
             <label>
-              Nome
+              Nome <span aria-hidden="true">*</span>
               <input
                 name="name"
                 value={form.name}
@@ -538,7 +564,7 @@ function LegalContactChat() {
               />
             </label>
             <label>
-              E-mail
+              E-mail <span aria-hidden="true">*</span>
               <input
                 name="email"
                 value={form.email}
@@ -563,7 +589,7 @@ function LegalContactChat() {
               />
             </label>
             <label>
-              Assunto principal
+              Assunto principal <span aria-hidden="true">*</span>
               <select name="topic" value={form.topic} onChange={updateField} required>
                 <option value="">Selecione</option>
                 {contactTopics.map((topic) => (
@@ -572,7 +598,7 @@ function LegalContactChat() {
               </select>
             </label>
             <label>
-              Conte em poucas linhas o que aconteceu
+              Conte em poucas linhas o que aconteceu <span aria-hidden="true">*</span>
               <textarea
                 name="message"
                 value={form.message}
@@ -583,6 +609,16 @@ function LegalContactChat() {
                 placeholder="Descreva o contexto, sem anexar documentos ou dados sensíveis."
               />
             </label>
+
+            <p className="legal-chat-privacy" id="contact-privacy-notice">
+              Ao enviar, você solicita o contato da equipe BRD. Usaremos os dados informados
+              somente para responder à sua solicitação. Não envie documentos, dados de saúde,
+              biometria, informações financeiras ou outros dados sensíveis. Para exercer seus
+              direitos de privacidade, escreva para {contactEmail}.
+              {privacyPolicyUrl ? (
+                <> <a href={privacyPolicyUrl}>Consulte a política de privacidade completa.</a></>
+              ) : null}
+            </p>
             <label>
               Melhor período para retorno
               <input
@@ -601,6 +637,7 @@ function LegalContactChat() {
               {feedback ? (
                 <m.p
                   className={`legal-chat-feedback ${status}`}
+                  role={status === "error" ? "alert" : "status"}
                   initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
@@ -722,7 +759,6 @@ function App() {
 
         <RevealSection className="section split" id="sobre">
           <m.div className="section-copy" variants={revealItem}>
-            <p className="eyebrow">O escritório</p>
             <h2>Uma banca construída por sócios que atuam junto ao cliente.</h2>
           </m.div>
           <m.div className="body-copy" variants={revealItem}>
@@ -741,7 +777,6 @@ function App() {
 
         <RevealSection className="section partners" id="socios">
           <m.div className="section-heading partners-heading" variants={revealItem}>
-            <p className="eyebrow">Sócios</p>
             <h2>Perfis que combinam proximidade, técnica e visão empresarial.</h2>
             <p>
               A seção parte das referências institucionais disponíveis e apresenta o time com
@@ -797,11 +832,10 @@ function App() {
 
         <RevealSection className="section" id="expertises">
           <m.div className="section-heading" variants={revealItem}>
-            <p className="eyebrow">Expertises</p>
             <h2>Especialização jurídica conectada aos setores que movem empresas.</h2>
           </m.div>
           <m.div className="services-grid" variants={revealGroup}>
-            {services.map((service, index) => (
+            {services.map((service) => (
               <m.article
                 className="service-card"
                 key={service.title}
@@ -809,7 +843,6 @@ function App() {
                 whileHover={{ y: -5 }}
                 transition={{ duration: 0.22, ease: motionEase }}
               >
-                <span>{String(index + 1).padStart(2, "0")}</span>
                 <h3>{service.title}</h3>
                 <p>{service.text}</p>
               </m.article>
@@ -819,7 +852,6 @@ function App() {
 
         <RevealSection className="section method" id="metodo">
           <m.div className="section-copy" variants={revealItem}>
-            <p className="eyebrow">Método BRD</p>
             <h2>Tradição jurídica com operação inteligente.</h2>
           </m.div>
           <m.div className="method-layout" variants={revealGroup}>
@@ -842,7 +874,6 @@ function App() {
 
         <RevealSection className="section intelligence" id="inteligencia">
           <m.div className="section-heading" variants={revealItem}>
-            <p className="eyebrow">Inteligência jurídica</p>
             <h2>Atualização, análise e prevenção para decisões que importam.</h2>
           </m.div>
           <m.div className="insights-grid" variants={revealGroup}>
@@ -875,7 +906,6 @@ function App() {
             />
           </m.div>
           <m.div variants={revealItem}>
-            <p className="eyebrow">Identidade</p>
             <h2>Elegância sóbria, ritmo digital e presença institucional.</h2>
             <p>
               A presença visual do BRD foi pensada para comunicar confiança, clareza e
@@ -892,7 +922,6 @@ function App() {
           aria-labelledby="contact-title"
         >
           <m.div variants={revealItem}>
-            <p className="eyebrow">Contato</p>
             <h2 id="contact-title">Vamos conversar sobre o próximo passo jurídico da sua empresa.</h2>
           </m.div>
           <m.div className="contact-actions" variants={revealItem}>
