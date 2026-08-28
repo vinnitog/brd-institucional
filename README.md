@@ -55,7 +55,7 @@ VITE_CONTACT_FORM_ENDPOINT=https://seu-endpoint-publico.example/contact
 VITE_PRIVACY_POLICY_URL=https://seu-dominio.example/politica-de-privacidade
 ```
 
-O envio direto só é ativado quando as duas URLs existem. O destinatário e qualquer credencial devem permanecer no servidor. Variáveis `VITE_*` são incluídas no bundle do navegador e nunca devem conter segredos.
+O envio direto só é ativado quando as duas URLs são HTTPS válidas e não contêm credenciais. O destinatário e qualquer credencial devem permanecer no servidor. Variáveis `VITE_*` são incluídas no bundle do navegador e nunca devem conter segredos.
 
 ## Estrutura
 

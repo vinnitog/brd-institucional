@@ -1,7 +1,21 @@
 import { openExternalWindow } from "./externalLinks.mjs";
 
+export function resolveSecureUrl(value) {
+  if (typeof value !== "string") return "";
+
+  const candidate = value.trim();
+
+  try {
+    const url = new URL(candidate);
+    return url.protocol === "https:" && !url.username && !url.password ? candidate : "";
+  } catch {
+    return "";
+  }
+}
+
 export function resolveContactEndpoint(endpoint, privacyPolicyUrl) {
-  return endpoint && privacyPolicyUrl ? endpoint : "";
+  const secureEndpoint = resolveSecureUrl(endpoint);
+  return secureEndpoint && resolveSecureUrl(privacyPolicyUrl) ? secureEndpoint : "";
 }
 
 export async function deliverContact(
