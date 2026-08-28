@@ -13,7 +13,9 @@ import {
   useSpring,
 } from "motion/react";
 import { buildGmailComposeUrl } from "./emailLinks.mjs";
-import { deliverContact, resolveContactEndpoint } from "./contactDelivery.mjs";
+import { deliverContact, resolveContactEndpoint, resolveSecureUrl } from "./contactDelivery.mjs";
+import { prepareContactForm } from "./contactForm.mjs";
+import { shouldCloseMenuOnEscape } from "./keyboardNavigation.mjs";
 import "./styles.css";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
@@ -254,7 +256,8 @@ const contactEmail = "contato@brd.adv.br";
 const contactEmailSubject = "Contato pelo site BRD";
 const contactEmailBody = "Ola, equipe BRD.\n\nGostaria de conversar sobre uma demanda juridica da minha empresa.";
 const configuredChatFormEndpoint = import.meta.env.VITE_CONTACT_FORM_ENDPOINT ?? "";
-const privacyPolicyUrl = import.meta.env.VITE_PRIVACY_POLICY_URL ?? "";
+const configuredPrivacyPolicyUrl = import.meta.env.VITE_PRIVACY_POLICY_URL ?? "";
+const privacyPolicyUrl = resolveSecureUrl(configuredPrivacyPolicyUrl);
 const chatFormEndpoint = resolveContactEndpoint(configuredChatFormEndpoint, privacyPolicyUrl);
 
 const contactTopics = [
@@ -324,6 +327,7 @@ function EmailContactLink({ email, subject, body }) {
       href={buildGmailComposeUrl(email, subject, body)}
       target="_blank"
       rel="noreferrer"
+      aria-label={`Escrever para ${email} pelo Gmail (abre em nova aba)`}
       whileHover={{ y: -3 }}
       whileTap={{ scale: 0.98 }}
     >
@@ -370,6 +374,7 @@ function LegalContactChat() {
   const [form, setForm] = useState(initialChatForm);
   const [status, setStatus] = useState("idle");
   const [feedback, setFeedback] = useState("");
+  const [invalidFields, setInvalidFields] = useState([]);
   const toggleRef = useRef(null);
   const closeButtonRef = useRef(null);
   const shouldReduceMotion = useReducedMotion();
@@ -398,29 +403,34 @@ function LegalContactChat() {
   const updateField = (event) => {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
+    setInvalidFields((current) => current.filter((field) => field !== name));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const formElement = event.currentTarget;
 
     if (form.company) {
       setStatus("sent");
       setFeedback("Agradecemos seu contato!");
       setForm(initialChatForm);
+      setInvalidFields([]);
+      return;
+    }
+
+    const { cleaned, invalidFields: nextInvalidFields } = prepareContactForm(form, FIELD_LIMITS);
+
+    if (nextInvalidFields.length) {
+      setStatus("error");
+      setFeedback("Revise os campos obrigatórios: espaços em branco não contam como informação.");
+      setInvalidFields(nextInvalidFields);
+      formElement.elements.namedItem(nextInvalidFields[0])?.focus();
       return;
     }
 
     setStatus("sending");
     setFeedback("");
-
-    const cleaned = {
-      name: form.name.trim().slice(0, FIELD_LIMITS.name),
-      email: form.email.trim().slice(0, FIELD_LIMITS.email),
-      phone: form.phone.trim().slice(0, FIELD_LIMITS.phone),
-      topic: form.topic.trim().slice(0, FIELD_LIMITS.topic),
-      message: form.message.trim().slice(0, FIELD_LIMITS.message),
-      schedule: form.schedule.trim().slice(0, FIELD_LIMITS.schedule),
-    };
+    setInvalidFields([]);
 
     const emailBody = buildChatEmailBody(cleaned);
     const subject = `[Site BRD] Novo contato - ${cleaned.topic || "Atendimento inicial"}`;
@@ -447,13 +457,15 @@ function LegalContactChat() {
       setStatus("sent");
       setFeedback("Solicitação enviada. Nossa equipe retornará pelo canal informado.");
       setForm(initialChatForm);
+      setInvalidFields([]);
       return;
     }
 
     if (delivery.status === "draft") {
       setStatus("sent");
-      setFeedback("Abrimos um rascunho no Gmail para você revisar e enviar.");
+      setFeedback("Abrimos um rascunho no Gmail. Revise os dados e clique em Enviar para concluir.");
       setForm(initialChatForm);
+      setInvalidFields([]);
       return;
     }
 
@@ -495,6 +507,7 @@ function LegalContactChat() {
             id="legal-chat-panel"
             className="legal-chat-panel"
             aria-labelledby="legal-chat-title"
+            aria-describedby="legal-chat-intro"
             initial={{
               opacity: 0,
               x: shouldReduceMotion ? 0 : 28,
@@ -523,8 +536,8 @@ function LegalContactChat() {
             </button>
           </div>
 
-          <div className="legal-chat-messages" aria-live="polite">
-            <p>
+          <div className="legal-chat-messages">
+            <p id="legal-chat-intro">
               Posso registrar seu contato para a equipe entender o assunto e indicar o melhor
               caminho para uma reunião inicial.
             </p>
@@ -559,6 +572,8 @@ function LegalContactChat() {
                 value={form.name}
                 onChange={updateField}
                 required
+                aria-invalid={invalidFields.includes("name") || undefined}
+                aria-describedby={invalidFields.includes("name") ? "contact-form-feedback" : undefined}
                 autoComplete="name"
                 maxLength={FIELD_LIMITS.name}
               />
@@ -570,6 +585,8 @@ function LegalContactChat() {
                 value={form.email}
                 onChange={updateField}
                 required
+                aria-invalid={invalidFields.includes("email") || undefined}
+                aria-describedby={invalidFields.includes("email") ? "contact-form-feedback" : undefined}
                 type="email"
                 autoComplete="email"
                 maxLength={FIELD_LIMITS.email}
@@ -590,7 +607,14 @@ function LegalContactChat() {
             </label>
             <label>
               Assunto principal <span aria-hidden="true">*</span>
-              <select name="topic" value={form.topic} onChange={updateField} required>
+              <select
+                name="topic"
+                value={form.topic}
+                onChange={updateField}
+                required
+                aria-invalid={invalidFields.includes("topic") || undefined}
+                aria-describedby={invalidFields.includes("topic") ? "contact-form-feedback" : undefined}
+              >
                 <option value="">Selecione</option>
                 {contactTopics.map((topic) => (
                   <option key={topic} value={topic}>{topic}</option>
@@ -604,6 +628,8 @@ function LegalContactChat() {
                 value={form.message}
                 onChange={updateField}
                 required
+                aria-invalid={invalidFields.includes("message") || undefined}
+                aria-describedby={invalidFields.includes("message") ? "contact-form-feedback" : undefined}
                 rows="4"
                 maxLength={FIELD_LIMITS.message}
                 placeholder="Descreva o contexto, sem anexar documentos ou dados sensíveis."
@@ -630,13 +656,31 @@ function LegalContactChat() {
               />
             </label>
 
+            {!chatFormEndpoint ? (
+              <p className="legal-chat-delivery-note">
+                Sem envio automático: abriremos um rascunho para você revisar e concluir no Gmail.
+              </p>
+            ) : null}
+
             <button className="button button-primary" type="submit" disabled={status === "sending"}>
-              {status === "sending" ? "Enviando..." : "Enviar para análise"}
+              {status === "sending"
+                ? "Enviando..."
+                : chatFormEndpoint ? "Enviar solicitação" : "Revisar e enviar por e-mail"}
             </button>
+            {!chatFormEndpoint ? (
+              <a
+                className="legal-chat-email-alternative"
+                href={`mailto:${contactEmail}`}
+                aria-label={`Usar meu aplicativo de e-mail para escrever para ${contactEmail}`}
+              >
+                Usar meu aplicativo de e-mail ({contactEmail})
+              </a>
+            ) : null}
             <AnimatePresence mode="wait">
               {feedback ? (
                 <m.p
                   className={`legal-chat-feedback ${status}`}
+                  id="contact-form-feedback"
                   role={status === "error" ? "alert" : "status"}
                   initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 6 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -656,6 +700,7 @@ function LegalContactChat() {
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuToggleRef = useRef(null);
   const closeMenu = () => setIsMenuOpen(false);
   const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
@@ -665,9 +710,26 @@ function App() {
     mass: 0.24,
   });
 
+  useEffect(() => {
+    if (!isMenuOpen) return undefined;
+
+    const closeMenuOnEscape = (event) => {
+      const hasOpenContactPanel = Boolean(document.getElementById("legal-chat-panel"));
+
+      if (shouldCloseMenuOnEscape(event.key, hasOpenContactPanel)) {
+        setIsMenuOpen(false);
+        requestAnimationFrame(() => menuToggleRef.current?.focus());
+      }
+    };
+
+    document.addEventListener("keydown", closeMenuOnEscape);
+    return () => document.removeEventListener("keydown", closeMenuOnEscape);
+  }, [isMenuOpen]);
+
   return (
     <LazyMotion features={domAnimation}>
       <MotionConfig reducedMotion="user">
+        <a className="skip-link" href="#main-content">Pular para o conteúdo principal</a>
         {!shouldReduceMotion ? (
           <m.div
             className="scroll-progress"
@@ -693,6 +755,7 @@ function App() {
           />
         </a>
         <m.button
+          ref={menuToggleRef}
           className="menu-toggle"
           type="button"
           aria-controls="main-navigation"
@@ -714,8 +777,8 @@ function App() {
         </nav>
         </m.header>
 
-      <main id="inicio">
-        <section className="hero" aria-labelledby="hero-title">
+      <main id="main-content" tabIndex={-1}>
+        <section className="hero" id="inicio" aria-labelledby="hero-title">
           <m.div className="hero-content" initial="hidden" animate="visible" variants={revealGroup}>
             <m.h1 id="hero-title" variants={revealItem}>
               Decisões jurídicas com visão de negócio.
@@ -955,6 +1018,7 @@ function App() {
               href={mapUrl}
               target="_blank"
               rel="noreferrer"
+              aria-label="Como chegar no Google Maps (abre em nova aba)"
             >
               <MapPinIcon />
               <span>Como chegar</span>
@@ -965,7 +1029,14 @@ function App() {
             <span className="footer-kicker">Redes sociais</span>
             <nav className="footer-social" aria-label="Redes sociais do BRD">
               {socialLinks.map((social) => (
-                <a className="social-link" key={social.label} href={social.href} target="_blank" rel="noreferrer">
+                <a
+                  className="social-link"
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={`${social.label} do BRD (abre em nova aba)`}
+                >
                   <SocialIcon type={social.icon} />
                   <span>{social.label}</span>
                 </a>

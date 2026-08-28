@@ -102,7 +102,10 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /<EmailContactLink email=\{contactEmail\} subject=\{contactEmailSubject\} body=\{contactEmailBody\} \/>/);
   assert.match(app, /href=\{buildGmailComposeUrl\(email, subject, body\)\}/);
   assert.doesNotMatch(app, /href=\{buildGmailComposeUrl\(contactEmail, contactEmailSubject\)\}/);
-  assert.doesNotMatch(app, /mailto:/);
+  assert.match(app, /href=\{`mailto:\$\{contactEmail\}`\}/);
+  assert.match(app, /Escrever para \$\{email\} pelo Gmail \(abre em nova aba\)/);
+  assert.match(app, /Como chegar no Google Maps \(abre em nova aba\)/);
+  assert.match(app, /\$\{social\.label\} do BRD \(abre em nova aba\)/);
   assert.doesNotMatch(app, /buildOutlookComposeUrl|Enviar via Gmail|Enviar via Outlook/);
   assert.match(app, /contactEmail = "contato@brd\.adv\.br"/);
   assert.doesNotMatch(app, /chatAnalysisEmail|@gmail\.com/);
@@ -122,6 +125,9 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /assets\/brand\/brd-mascot-b\.svg/);
   assert.match(app, /aria-controls="legal-chat-panel"/);
   assert.match(app, /aria-labelledby="legal-chat-title"/);
+  assert.match(app, /className="skip-link" href="#main-content"/);
+  assert.match(app, /<main id="main-content" tabIndex=\{-1\}>/);
+  assert.match(app, /<section className="hero" id="inicio"/);
   assert.doesNotMatch(app, /Abrir rota no Google Maps/);
   assert.doesNotMatch(app, /name: "Maria"/);
   assert.match(app, /target="_blank"\s+rel="noreferrer"/);
@@ -145,7 +151,9 @@ test("homepage offers a legally safe guided first-contact chat", () => {
     "não analisa documentos",
     "não antecipa resultado",
     "Evite enviar dados sensíveis",
-    "Enviar para análise",
+    "Revisar e enviar por e-mail",
+    "Sem envio automático",
+    "Usar meu aplicativo de e-mail",
     "Um novo contato foi iniciado pelo chatbot do site.",
     "[Site BRD] Novo contato",
     "Dados do contato",
@@ -171,7 +179,8 @@ test("homepage offers a legally safe guided first-contact chat", () => {
 
   assert.match(app, /deliverContact\(\{/);
   assert.doesNotMatch(app, /VITE_CONTACT_FORM_ACCESS_KEY|access_key|to_email/);
-  assert.match(app, /import \{ deliverContact, resolveContactEndpoint \} from "\.\/contactDelivery\.mjs"/);
+  assert.match(app, /prepareContactForm/);
+  assert.match(app, /resolveSecureUrl/);
   assert.doesNotMatch(app, /window\.location\.assign/);
   assert.match(app, /gmailComposeUrl,/);
   assert.doesNotMatch(app, /window\.location\.href/);
@@ -179,7 +188,8 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   assert.match(app, /buildChatEmailBody/);
   assert.match(app, /const gmailComposeUrl = buildGmailComposeUrl\(contactEmail, subject, emailBody\)/);
   assert.match(app, /FIELD_LIMITS/);
-  assert.match(app, /form\.name\.trim\(\)\.slice\(0, FIELD_LIMITS\.name\)/);
+  assert.match(app, /prepareContactForm\(form, FIELD_LIMITS\)/);
+  assert.match(app, /aria-invalid=\{invalidFields\.includes\("name"\) \|\| undefined\}/);
   assert.match(app, /if \(form\.company\)/);
   assert.match(app, /name="company"/);
   assert.doesNotMatch(app, /emailDraft|setEmailDraft/);
@@ -188,6 +198,8 @@ test("homepage offers a legally safe guided first-contact chat", () => {
   assert.match(app, /placeholder="Ex\.: manhã, tarde ou dia específico"/);
   assert.match(app, /requestAnimationFrame\(\(\) => toggleRef\.current\?\.focus\(\)\)/);
   assert.match(app, /event\.key === "Escape"/);
+  assert.match(app, /requestAnimationFrame\(\(\) => menuToggleRef\.current\?\.focus\(\)\)/);
+  assert.match(app, /shouldCloseMenuOnEscape\(event\.key, hasOpenContactPanel\)/);
   assert.match(app, /id="contact-privacy-notice"/);
   assert.match(app, /VITE_PRIVACY_POLICY_URL/);
   assert.match(app, /resolveContactEndpoint\(configuredChatFormEndpoint, privacyPolicyUrl\)/);
@@ -284,6 +296,13 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.doesNotMatch(styles, /letter-spacing:\s*-/);
 });
 
+test("skip link stays off-screen until keyboard focus makes it visible", () => {
+  const styles = read("src/styles.css");
+
+  assert.match(styles, /\.skip-link\s*\{[^}]*transform:\s*translateY\(-160%\)/s);
+  assert.match(styles, /\.skip-link:focus-visible\s*\{[^}]*transform:\s*translateY\(0\)/s);
+});
+
 test("external window helper reports popup success and failure", async () => {
   const { openExternalWindow } = await importModule("src/externalLinks.mjs");
   const calls = [];
@@ -325,11 +344,17 @@ test("external window helper reports popup success and failure", async () => {
 });
 
 test("contact delivery gates endpoints and reports every transport outcome", async () => {
-  const { deliverContact, resolveContactEndpoint } = await importModule("src/contactDelivery.mjs");
+  const { deliverContact, resolveContactEndpoint, resolveSecureUrl } = await importModule("src/contactDelivery.mjs");
 
   assert.equal(resolveContactEndpoint("https://api.example/contact", "https://example/privacy"), "https://api.example/contact");
+  assert.equal(resolveContactEndpoint("http://api.example/contact", "https://example/privacy"), "");
+  assert.equal(resolveContactEndpoint("https://api.example/contact", "http://example/privacy"), "");
+  assert.equal(resolveContactEndpoint("not-a-url", "https://example/privacy"), "");
   assert.equal(resolveContactEndpoint("https://api.example/contact", ""), "");
   assert.equal(resolveContactEndpoint("", "https://example/privacy"), "");
+  assert.equal(resolveSecureUrl(" https://example.com/privacy "), "https://example.com/privacy");
+  assert.equal(resolveSecureUrl("http://example.com/privacy"), "");
+  assert.equal(resolveSecureUrl("https://user:secret@example.com/privacy"), "");
 
   const requests = [];
   const base = {
