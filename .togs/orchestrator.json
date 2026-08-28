@@ -15,7 +15,8 @@
     "diagnosing-bugs",
     "tdd",
     "javascript-testing-patterns",
-    "accessibility-compliance"
+    "accessibility-compliance",
+    "grill-me"
   ],
   "sources": [
     {

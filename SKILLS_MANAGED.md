@@ -8,6 +8,7 @@ Este arquivo e gerado pelo hub `togs-backoffice`. O caminho local do control pla
 | `tdd` | `mattpocock/skills` | feature, bug, test |
 | `javascript-testing-patterns` | `wshobson/agents` | javascript, typescript, unit-test, integration-test |
 | `accessibility-compliance` | `wshobson/agents` | frontend, accessibility, wcag, screen-reader |
+| `grill-me` | `mattpocock/skills` | explicit-invocation, requirements, plan, design, decision |
 
 ## Licencas
 
