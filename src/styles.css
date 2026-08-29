@@ -849,12 +849,14 @@ h3 {
 .legal-chat-panel {
   position: fixed;
   right: 0;
-  top: 50%;
+  top: 24px;
+  bottom: 24px;
   z-index: 40;
-  transform: translateY(-50%);
   display: flex;
   width: min(400px, calc(100vw - 16px));
-  max-height: min(620px, calc(100svh - 48px));
+  height: min(620px, calc(100vh - 48px));
+  height: min(620px, calc(100dvh - 48px));
+  margin-block: auto;
   overflow: auto;
   flex-direction: column;
   border: 1px solid rgba(217, 194, 255, 0.36);
@@ -1395,7 +1397,9 @@ footer a:focus-visible {
     top: max(8px, env(safe-area-inset-top));
     bottom: max(8px, env(safe-area-inset-bottom));
     width: min(380px, calc(100vw - 16px));
+    height: auto;
     max-height: none;
+    margin-block: 0;
     transform: none;
   }
 

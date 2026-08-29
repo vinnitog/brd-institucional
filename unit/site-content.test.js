@@ -259,7 +259,7 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /\.legal-chat-toggle\s*\{[\s\S]*right: 0/);
   assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*position: fixed/);
   assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*right: 0/);
-  assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*max-height: min\(620px, calc\(100svh - 48px\)\)/);
+  assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*height: min\(620px, calc\(100dvh - 48px\)\)/);
   assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*overflow: auto/);
   assert.match(styles, /@keyframes mascotWave/);
   assert.match(styles, /animation: mascotWave/);
@@ -311,10 +311,23 @@ test("mobile contact panel stays inside the viewport and exposes its complete sc
 
   assert.match(
     styles,
-    /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[^}]*top:\s*max\(8px, env\(safe-area-inset-top\)\)[^}]*bottom:\s*max\(8px, env\(safe-area-inset-bottom\)\)[^}]*max-height:\s*none[^}]*transform:\s*none/s,
+    /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[^}]*top:\s*max\(8px, env\(safe-area-inset-top\)\)[^}]*bottom:\s*max\(8px, env\(safe-area-inset-bottom\)\)[^}]*height:\s*auto[^}]*max-height:\s*none[^}]*margin-block:\s*0[^}]*transform:\s*none/s,
   );
   assert.match(styles, /\.legal-chat-panel\s*\{[^}]*overflow:\s*auto/s);
   assert.doesNotMatch(mobileBreakpoint, /max-height:\s*min\(620px, calc\(100svh - 64px\)\)/);
+});
+
+test("desktop contact panel stays in the viewport without relying on animated transforms", () => {
+  const styles = read("src/styles.css");
+  const panelRule = styles.match(/\.legal-chat-panel\s*\{(?<declarations>[^}]*)\}/s)?.groups?.declarations ?? "";
+
+  assert.match(panelRule, /top:\s*24px/);
+  assert.match(panelRule, /bottom:\s*24px/);
+  assert.match(panelRule, /height:\s*min\(620px, calc\(100vh - 48px\)\)/);
+  assert.match(panelRule, /height:\s*min\(620px, calc\(100dvh - 48px\)\)/);
+  assert.match(panelRule, /margin-block:\s*auto/);
+  assert.match(panelRule, /overflow:\s*auto/);
+  assert.doesNotMatch(panelRule, /top:\s*50%|translateY\(-50%\)/);
 });
 
 test("external window helper reports popup success and failure", async () => {
