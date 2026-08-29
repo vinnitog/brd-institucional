@@ -278,7 +278,6 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-photo img\s*\{[\s\S]*object-fit: contain/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.partner-card\s*\{[\s\S]*max-width: 360px/);
   assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[\s\S]*left: auto/);
-  assert.match(styles, /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[\s\S]*max-height: min\(620px, calc\(100svh - 64px\)\)/);
   assert.match(styles, /center center \/ cover/);
   assert.match(styles, /font-size: clamp\(3rem, 12vw, 4\.2rem\)/);
   assert.match(styles, /scroll-padding-top: 96px/);
@@ -301,6 +300,21 @@ test("skip link stays off-screen until keyboard focus makes it visible", () => {
 
   assert.match(styles, /\.skip-link\s*\{[^}]*transform:\s*translateY\(-160%\)/s);
   assert.match(styles, /\.skip-link:focus-visible\s*\{[^}]*transform:\s*translateY\(0\)/s);
+});
+
+test("mobile contact panel stays inside the viewport and exposes its complete scroll area", () => {
+  const styles = read("src/styles.css");
+  const mobileBreakpoint = styles.slice(
+    styles.indexOf("@media (max-width: 720px)"),
+    styles.indexOf("@media (prefers-reduced-motion: reduce)"),
+  );
+
+  assert.match(
+    styles,
+    /@media \(max-width: 720px\)[\s\S]*\.legal-chat-panel\s*\{[^}]*top:\s*max\(8px, env\(safe-area-inset-top\)\)[^}]*bottom:\s*max\(8px, env\(safe-area-inset-bottom\)\)[^}]*max-height:\s*none[^}]*transform:\s*none/s,
+  );
+  assert.match(styles, /\.legal-chat-panel\s*\{[^}]*overflow:\s*auto/s);
+  assert.doesNotMatch(mobileBreakpoint, /max-height:\s*min\(620px, calc\(100svh - 64px\)\)/);
 });
 
 test("external window helper reports popup success and failure", async () => {

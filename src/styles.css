@@ -1392,8 +1392,11 @@ footer a:focus-visible {
   .legal-chat-panel {
     right: 0;
     left: auto;
+    top: max(8px, env(safe-area-inset-top));
+    bottom: max(8px, env(safe-area-inset-bottom));
     width: min(380px, calc(100vw - 16px));
-    max-height: min(620px, calc(100svh - 64px));
+    max-height: none;
+    transform: none;
   }
 
   .button {
