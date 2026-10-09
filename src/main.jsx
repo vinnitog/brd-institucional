@@ -15,7 +15,7 @@ import {
 import { buildGmailComposeUrl } from "./emailLinks.mjs";
 import { deliverContact, resolveContactEndpoint, resolveSecureUrl } from "./contactDelivery.mjs";
 import { prepareContactForm } from "./contactForm.mjs";
-import { shouldCloseMenuOnEscape } from "./keyboardNavigation.mjs";
+import { getDialogFocusDestination, shouldCloseMenuOnEscape } from "./keyboardNavigation.mjs";
 import "./styles.css";
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
@@ -377,22 +377,44 @@ function LegalContactChat() {
   const [invalidFields, setInvalidFields] = useState([]);
   const toggleRef = useRef(null);
   const closeButtonRef = useRef(null);
+  const panelRef = useRef(null);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (!isOpen) return undefined;
 
+    document.body.classList.add("has-open-dialog");
     closeButtonRef.current?.focus();
 
-    const closeOnEscape = (event) => {
+    const handleDialogKeyDown = (event) => {
       if (event.key === "Escape") {
         setIsOpen(false);
         requestAnimationFrame(() => toggleRef.current?.focus());
+        return;
+      }
+
+      const focusableElements = Array.from(panelRef.current?.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ) ?? []);
+      const activeIndex = focusableElements.indexOf(document.activeElement);
+      const destination = getDialogFocusDestination(
+        event.key,
+        event.shiftKey,
+        activeIndex,
+        focusableElements.length,
+      );
+
+      if (destination !== null) {
+        event.preventDefault();
+        focusableElements[destination]?.focus();
       }
     };
 
-    document.addEventListener("keydown", closeOnEscape);
-    return () => document.removeEventListener("keydown", closeOnEscape);
+    document.addEventListener("keydown", handleDialogKeyDown);
+    return () => {
+      document.body.classList.remove("has-open-dialog");
+      document.removeEventListener("keydown", handleDialogKeyDown);
+    };
   }, [isOpen]);
 
   const closeChat = () => {
@@ -501,11 +523,18 @@ function LegalContactChat() {
         <span>Fale comigo!</span>
       </m.button>
 
+      {isOpen ? (
+        <div className="legal-chat-backdrop" aria-hidden="true" onClick={closeChat} />
+      ) : null}
+
       <AnimatePresence>
         {isOpen ? (
           <m.aside
+            ref={panelRef}
             id="legal-chat-panel"
             className="legal-chat-panel"
+            role="dialog"
+            aria-modal="true"
             aria-labelledby="legal-chat-title"
             aria-describedby="legal-chat-intro"
             initial={{
@@ -701,7 +730,6 @@ function LegalContactChat() {
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuToggleRef = useRef(null);
-  const closeMenu = () => setIsMenuOpen(false);
   const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const smoothScrollProgress = useSpring(scrollYProgress, {
@@ -725,6 +753,14 @@ function App() {
     document.addEventListener("keydown", closeMenuOnEscape);
     return () => document.removeEventListener("keydown", closeMenuOnEscape);
   }, [isMenuOpen]);
+
+  const handleNavigation = (event) => {
+    const targetId = event.currentTarget.hash.slice(1);
+    setIsMenuOpen(false);
+    requestAnimationFrame(() => {
+      document.getElementById(targetId)?.querySelector("h2")?.focus({ preventScroll: true });
+    });
+  };
 
   return (
     <LazyMotion features={domAnimation}>
@@ -751,7 +787,7 @@ function App() {
             width="148"
             height="44"
             decoding="async"
-            fetchpriority="high"
+            fetchPriority="high"
           />
         </a>
         <m.button
@@ -769,11 +805,11 @@ function App() {
           <span aria-hidden="true" />
         </m.button>
         <nav id="main-navigation" className={isMenuOpen ? "is-open" : ""}>
-          <a href="#sobre" onClick={closeMenu}>Sobre</a>
-          <a href="#socios" onClick={closeMenu}>Sócios</a>
-          <a href="#expertises" onClick={closeMenu}>Expertises</a>
-          <a href="#inteligencia" onClick={closeMenu}>Inteligência</a>
-          <a href="#contato" onClick={closeMenu}>Contato</a>
+          <a href="#sobre" onClick={handleNavigation}>Sobre</a>
+          <a href="#socios" onClick={handleNavigation}>Sócios</a>
+          <a href="#expertises" onClick={handleNavigation}>Expertises</a>
+          <a href="#inteligencia" onClick={handleNavigation}>Inteligência</a>
+          <a href="#contato" onClick={handleNavigation}>Contato</a>
         </nav>
         </m.header>
 
@@ -822,7 +858,7 @@ function App() {
 
         <RevealSection className="section split" id="sobre">
           <m.div className="section-copy" variants={revealItem}>
-            <h2>Uma banca construída por sócios que atuam junto ao cliente.</h2>
+            <h2 tabIndex={-1}>Uma banca construída por sócios que atuam junto ao cliente.</h2>
           </m.div>
           <m.div className="body-copy" variants={revealItem}>
             <p>
@@ -840,7 +876,7 @@ function App() {
 
         <RevealSection className="section partners" id="socios">
           <m.div className="section-heading partners-heading" variants={revealItem}>
-            <h2>Perfis que combinam proximidade, técnica e visão empresarial.</h2>
+            <h2 tabIndex={-1}>Perfis que combinam proximidade, técnica e visão empresarial.</h2>
             <p>
               A seção parte das referências institucionais disponíveis e apresenta o time com
               sobriedade, sem antecipar currículos ou credenciais ainda não documentadas no site.
@@ -895,7 +931,7 @@ function App() {
 
         <RevealSection className="section" id="expertises">
           <m.div className="section-heading" variants={revealItem}>
-            <h2>Especialização jurídica conectada aos setores que movem empresas.</h2>
+            <h2 tabIndex={-1}>Especialização jurídica conectada aos setores que movem empresas.</h2>
           </m.div>
           <m.div className="services-grid" variants={revealGroup}>
             {services.map((service) => (
@@ -937,7 +973,7 @@ function App() {
 
         <RevealSection className="section intelligence" id="inteligencia">
           <m.div className="section-heading" variants={revealItem}>
-            <h2>Atualização, análise e prevenção para decisões que importam.</h2>
+            <h2 tabIndex={-1}>Atualização, análise e prevenção para decisões que importam.</h2>
           </m.div>
           <m.div className="insights-grid" variants={revealGroup}>
             {insights.map((insight) => (
@@ -985,7 +1021,7 @@ function App() {
           aria-labelledby="contact-title"
         >
           <m.div variants={revealItem}>
-            <h2 id="contact-title">Vamos conversar sobre o próximo passo jurídico da sua empresa.</h2>
+            <h2 id="contact-title" tabIndex={-1}>Vamos conversar sobre o próximo passo jurídico da sua empresa.</h2>
           </m.div>
           <m.div className="contact-actions" variants={revealItem}>
             <EmailContactLink email={contactEmail} subject={contactEmailSubject} body={contactEmailBody} />

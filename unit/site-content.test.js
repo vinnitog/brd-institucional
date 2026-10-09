@@ -33,6 +33,20 @@ test("site entrypoints and brand documentation exist", () => {
   }
 });
 
+test("published site exposes complete discovery and sharing metadata", () => {
+  const index = read("index.html");
+
+  assert.match(index, /width=device-width, initial-scale=1\.0, viewport-fit=cover/);
+  assert.match(index, /rel="canonical" href="https:\/\/vinnitog\.github\.io\/brd-institucional\/"/);
+  assert.match(index, /name="robots" content="index, follow, max-image-preview:large"/);
+  assert.match(index, /property="og:title"/);
+  assert.match(index, /property="og:description"/);
+  assert.match(index, /property="og:image" content="https:\/\/vinnitog\.github\.io\/brd-institucional\/assets\/brand\/hero-background\.jpg"/);
+  assert.match(index, /name="twitter:card" content="summary_large_image"/);
+  assert.match(read("public/robots.txt"), /Sitemap: https:\/\/vinnitog\.github\.io\/brd-institucional\/sitemap\.xml/);
+  assert.match(read("public/sitemap.xml"), /<loc>https:\/\/vinnitog\.github\.io\/brd-institucional\/<\/loc>/);
+});
+
 test("brand references capture the official identity signals", () => {
   const references = read("docs/brand-references.md");
   assert.match(references, /#964AFB/);
@@ -125,6 +139,10 @@ test("homepage contains the core BRD institutional content", () => {
   assert.match(app, /assets\/brand\/brd-mascot-b\.svg/);
   assert.match(app, /aria-controls="legal-chat-panel"/);
   assert.match(app, /aria-labelledby="legal-chat-title"/);
+  assert.match(app, /role="dialog"/);
+  assert.match(app, /aria-modal="true"/);
+  assert.match(app, /getDialogFocusDestination/);
+  assert.match(app, /handleNavigation/);
   assert.match(app, /className="skip-link" href="#main-content"/);
   assert.match(app, /<main id="main-content" tabIndex=\{-1\}>/);
   assert.match(app, /<section className="hero" id="inicio"/);
@@ -261,6 +279,9 @@ test("frontend styling uses local assets and responsive safeguards", () => {
   assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*right: 0/);
   assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*height: min\(620px, calc\(100dvh - 48px\)\)/);
   assert.match(styles, /\.legal-chat-panel\s*\{[\s\S]*overflow: auto/);
+  assert.match(styles, /\.legal-chat-header\s*\{[^}]*position: sticky/s);
+  assert.match(styles, /\.legal-chat-header button\s*\{[^}]*width: 44px[^}]*height: 44px/s);
+  assert.match(styles, /--purple-action:\s*#9347f7/);
   assert.match(styles, /@keyframes mascotWave/);
   assert.match(styles, /animation: mascotWave/);
   assert.match(styles, /\.legal-chat\.is-open \.legal-chat-toggle\s*\{[\s\S]*display: none/);
@@ -546,4 +567,5 @@ test("github pages deployment builds the dist artifact", () => {
   assert.match(workflow, /npm run build:pages/);
   assert.match(workflow, /actions\/deploy-pages@v4/);
   assert.match(workflow, /path: dist/);
+  assert.doesNotMatch(workflow, /TECHTOGS_UTILITIES_SSH_KEY|techtogs-utilities/);
 });

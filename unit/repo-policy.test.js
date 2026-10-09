@@ -117,7 +117,7 @@ test("current reviewable tree does not expose common sensitive values", () => {
   }
 });
 
-test("vendored skills include their complete LGPD dependency set and licenses", () => {
+test("shared skill manifest includes the required profiles and local license notices", () => {
   const lgpdSkills = [
     "audit",
     "legal-basis",
@@ -140,12 +140,15 @@ test("vendored skills include their complete LGPD dependency set and licenses", 
     "legacy-retrofit",
   ];
 
-  for (const skill of lgpdSkills) {
-    assert.ok(fs.existsSync(path.join(root, ".agents", "skills", `lgpd-${skill}`, "SKILL.md")));
-  }
+  const manifest = JSON.parse(read(".techtogs-utilities.json"));
+
+  assert.equal(manifest.repository, "git@github.com:vinnitog/techtogs-utilities.git");
+  assert.match(manifest.libraryCommit, /^[a-f0-9]{40}$/);
+  for (const skill of lgpdSkills) assert.ok(manifest.skills[`lgpd-${skill}`], `lgpd-${skill} should be pinned`);
+  assert.ok(manifest.skills.impeccable, "impeccable should be pinned");
 
   for (const file of [
-    ".agents/skills/impeccable/SKILL.md",
+    "SKILLS_SHARED.md",
     "third_party/lgpd-skills-LICENSE.txt",
     "third_party/impeccable-LICENSE.txt",
     "third_party/impeccable-NOTICE.md",

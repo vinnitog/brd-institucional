@@ -65,8 +65,12 @@ public/               fontes e assets otimizados
 unit/                 testes automatizados
 docs/                 decisões e referências de marca
 .lgpd/                artefatos de auditoria e rascunhos de privacidade
-.agents/skills/        skills locais de LGPD e design
+.techtogs-utilities.json  catálogo compartilhado fixado por versão
 ```
+
+As skills de agentes são ferramentas opcionais de desenvolvimento, geradas localmente e
+ignoradas pelo Git. Consulte [`SKILLS_SHARED.md`](SKILLS_SHARED.md) para instalá-las; elas não
+são necessárias para executar, testar ou publicar o site.
 
 ## Privacidade e segurança
 
