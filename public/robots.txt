@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vinnitog.github.io/brd-institucional/sitemap.xml

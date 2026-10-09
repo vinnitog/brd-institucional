@@ -1,4 +1,4 @@
-﻿# CLAUDE.md - brd-institucional
+# CLAUDE.md - brd-institucional
 
 ## Workspace Obrigatorio
 

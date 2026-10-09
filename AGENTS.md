@@ -1,4 +1,4 @@
-﻿# AGENTS.md - brd-institucional
+# AGENTS.md - brd-institucional
 
 ## Workspace Obrigatorio
 
@@ -110,16 +110,14 @@ O objetivo e nao repetir ciclos improdutivos de Browser quando o bloqueio e do a
 - Se ja existir PR `develop -> main`, atualize/comente o PR existente em vez de tentar criar duplicado.
 - Se houver service worker/cache, incremente a versao do cache quando HTML/CSS/JS mudar.
 
-<!-- togs-orchestrator:start -->
-## Orquestracao Central
+<!-- techtogs-utilities:start -->
+## Skills e agentes compartilhados
 
-Este repositorio e um no independente gerenciado pelo hub `togs-backoffice` com o id `brd-institucional`. Quando um caminho local for necessario, resolva-o pelo control plane ou pela variavel `TOGS_BACKOFFICE_PATH`; nao publique paths de usuario neste repositorio.
+Leia `SKILLS_SHARED.md` e `.techtogs-utilities.json`. As skills genericas e os
+papeis de implementacao, revisao e QA vem de `techtogs-utilities`. Preserve o
+fluxo Git, a stack, os testes e as decisoes especificas acima. Use o contexto
+ja disponivel antes de solicitar dados ou confirmacoes adicionais.
 
-Antes de alterar codigo, testes, documentacao ou configuracao:
+- Contexto, regras de negocio e comandos permanecem nos documentos locais existentes.
 
-1. Leia `.togs\orchestrator.json` para confirmar responsabilidade e capacidades.
-2. Leia `SKILLS_MANAGED.md` e ative somente skills compativeis com a tarefa.
-3. Preserve a independencia deste repositorio: nao importe codigo diretamente de outro projeto e nao compartilhe historico Git.
-
-O hub pode auditar e sincronizar metadados/skills, mas nao pode commitar, fazer push, merge, deploy ou remover arquivos deste repositorio automaticamente.
-<!-- togs-orchestrator:end -->
+<!-- techtogs-utilities:end -->

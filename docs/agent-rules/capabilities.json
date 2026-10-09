@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "projectId": "brd-institucional",
+  "responsibility": "Site institucional publico do escritorio BRD e canal inicial de contato.",
+  "capabilities": [
+    "frontend",
+    "contact-form",
+    "personal-data",
+    "accessibility"
+  ]
+}
