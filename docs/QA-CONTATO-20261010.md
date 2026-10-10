@@ -104,7 +104,8 @@ harness para eliminar dependência de layout. Nenhum navegador ou endpoint real
 foi utilizado. Avisos de Motion sobre movimento reduzido e diretivas `use client`
 no build não impediram os gates. Os 5 alertas completos vêm de Vite/esbuild/
 PostCSS/nanoid/source-map-js anteriores, sem aviso atribuído ao novo JSDOM;
-remediação do tooling continua um lote separado.
+remediação do tooling foi concluída em lote separado, sem alterar o contato.
+O audit atual ficou em zero; consulte [QA-DEPENDENCIAS-20261010.md](QA-DEPENDENCIAS-20261010.md).
 
 Revisões independentes de código/QA aprovaram transporte, guarda, alerta e limites.
 A primeira revisão identificou dependência entre os cenários DOM; a correção
