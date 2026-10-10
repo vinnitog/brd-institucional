@@ -36,9 +36,10 @@ desvio de hash causado pela plataforma.
 ## Performance: referência, não Web Vitals
 
 Esses oito arquivos somam 1.042.526 bytes decodificados, não o total de uma
-sessão: imports dinâmicos, fotos e outras fontes não foram enumerados.
+sessão: fotos, outras fontes e assets não foram enumerados.
 Hero, fonte variável e bundle JS são os maiores itens da amostra. A página já
-precarrega hero e fontes principais e carrega Motion sob demanda; não se removeu
+precarrega hero e fontes principais e usa LazyMotion com domAnimation importado
+estaticamente; não se removeu
 marca ou conteúdo para reduzir bytes. Formatos/resoluções podem ser avaliados
 em lote específico com prova visual, mas tamanho isolado não demonstra um
 defeito de LCP/INP. Não houve benchmark de rede/CPU ou claim de Web Vitals.
