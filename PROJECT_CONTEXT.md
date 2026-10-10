@@ -89,3 +89,14 @@ ativação de endpoint, alteração de destinatário ou envio real. Evidência l
 48 testes, builds normal/Pages e detector Impeccable sem ocorrências. Limites e
 decisões em `docs/QA-CONTATO-20261010.md`.
 
+## Tooling — correções compatíveis em 10/10/2026
+
+Vite foi atualizado de 7.3.3 para 7.3.7 e suas transitivas esbuild, PostCSS,
+nanoid e source-map-js receberam versões corrigidas dentro das faixas suportadas.
+Audit completo e de produção: zero avisos (baseline: cinco avisos dev).
+React 19.2.6, Motion 12.42.2 e JSDOM 26.1.0 permanecem iguais; não houve edição
+de UI, CSS, destinatário, endpoint ou configuração de contato. Após npm ci, os
+48 testes e builds normal/Pages passaram. JS/CSS do build normal são idênticos
+em bytes/hash/gzip ao baseline. Evidências e limites:
+`docs/QA-DEPENDENCIAS-20261010.md`.
+
