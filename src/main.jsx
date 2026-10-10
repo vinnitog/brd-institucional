@@ -378,6 +378,7 @@ function LegalContactChat() {
   const toggleRef = useRef(null);
   const closeButtonRef = useRef(null);
   const panelRef = useRef(null);
+  const submissionRef = useRef(false);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
@@ -430,6 +431,7 @@ function LegalContactChat() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (submissionRef.current) return;
     const formElement = event.currentTarget;
 
     if (form.company) {
@@ -450,51 +452,58 @@ function LegalContactChat() {
       return;
     }
 
-    setStatus("sending");
-    setFeedback("");
-    setInvalidFields([]);
-
-    const emailBody = buildChatEmailBody(cleaned);
-    const subject = `[Site BRD] Novo contato - ${cleaned.topic || "Atendimento inicial"}`;
-    const gmailComposeUrl = buildGmailComposeUrl(contactEmail, subject, emailBody);
-    const payload = {
-      subject,
-      from_name: cleaned.name,
-      reply_to: cleaned.email,
-      name: cleaned.name,
-      email: cleaned.email,
-      phone: cleaned.phone,
-      topic: cleaned.topic,
-      schedule: cleaned.schedule,
-      message: emailBody,
-    };
-
-    const delivery = await deliverContact({
-      endpoint: chatFormEndpoint,
-      payload,
-      gmailComposeUrl,
-    });
-
-    if (delivery.status === "sent") {
-      setStatus("sent");
-      setFeedback("Solicitação enviada. Nossa equipe retornará pelo canal informado.");
-      setForm(initialChatForm);
+    submissionRef.current = true;
+    try {
+      setStatus("sending");
+      setFeedback("");
       setInvalidFields([]);
-      return;
-    }
 
-    if (delivery.status === "draft") {
-      setStatus("sent");
-      setFeedback("Abrimos um rascunho no Gmail. Revise os dados e clique em Enviar para concluir.");
-      setForm(initialChatForm);
-      setInvalidFields([]);
-      return;
-    }
+      const emailBody = buildChatEmailBody(cleaned);
+      const subject = `[Site BRD] Novo contato - ${cleaned.topic || "Atendimento inicial"}`;
+      const gmailComposeUrl = buildGmailComposeUrl(contactEmail, subject, emailBody);
+      const payload = {
+        subject,
+        from_name: cleaned.name,
+        reply_to: cleaned.email,
+        name: cleaned.name,
+        email: cleaned.email,
+        phone: cleaned.phone,
+        topic: cleaned.topic,
+        schedule: cleaned.schedule,
+        message: emailBody,
+      };
 
-    setStatus("error");
-    setFeedback(delivery.reason === "popup"
-      ? `O navegador bloqueou o Gmail. Escreva para ${contactEmail} ou permita pop-ups e tente novamente.`
-      : `Não foi possível enviar agora. Use o e-mail ${contactEmail} ou tente novamente em instantes.`);
+      const delivery = await deliverContact({
+        endpoint: chatFormEndpoint,
+        payload,
+        gmailComposeUrl,
+      });
+
+      if (delivery.status === "sent") {
+        setStatus("sent");
+        setFeedback("Solicitação enviada. Nossa equipe retornará pelo canal informado.");
+        setForm(initialChatForm);
+        setInvalidFields([]);
+        return;
+      }
+
+      if (delivery.status === "draft") {
+        setStatus("sent");
+        setFeedback("Abrimos um rascunho no Gmail. Revise os dados e clique em Enviar para concluir.");
+        setForm(initialChatForm);
+        setInvalidFields([]);
+        return;
+      }
+
+      setStatus("error");
+      setFeedback(delivery.reason === "popup"
+        ? `O navegador bloqueou o Gmail. Escreva para ${contactEmail} ou permita pop-ups e tente novamente.`
+        : delivery.reason === "timeout"
+          ? "Não foi possível confirmar o recebimento em 12 segundos. Sua solicitação pode ter sido recebida. Seus campos foram mantidos; confirme o recebimento com a equipe BRD antes de enviar novamente."
+          : "Não foi possível confirmar o recebimento. Sua solicitação pode ter sido recebida. Seus campos foram mantidos; confirme com a equipe BRD antes de enviar novamente.");
+    } finally {
+      submissionRef.current = false;
+    }
   };
 
   return (

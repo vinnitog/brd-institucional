@@ -76,3 +76,16 @@ git diff --check
 - Fazer staging explicito por arquivo.
 - Manter documentacao de contexto versionada neste arquivo.
 
+## Primeiro contato — limite de espera em 10/10/2026
+
+Quando o endpoint opcional estiver configurado junto de política HTTPS, o POST
+possui limite programado de 12 segundos, abort best effort e retorno por race
+mesmo se o transporte ignorar cancelamento. Timeout e erro de rede conservam os
+campos e comunicam recebimento incerto, orientando confirmar com a equipe antes
+de reenviar. Uma guarda síncrona impede tentativas simultâneas, inclusive ao
+fechar/reabrir o painel; fechar o painel não cancela a tentativa em andamento.
+Sem endpoint, o fluxo continua sendo somente rascunho manual no Gmail. Não houve
+ativação de endpoint, alteração de destinatário ou envio real. Evidência local:
+48 testes, builds normal/Pages e detector Impeccable sem ocorrências. Limites e
+decisões em `docs/QA-CONTATO-20261010.md`.
+
