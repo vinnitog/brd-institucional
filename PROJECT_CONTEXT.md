@@ -98,6 +98,12 @@ splitdomAnimation acrescentou bytes/request e foi descartado; Motion permanece
 síncrono. Offline/PWA continuaNao, sem service worker ou persistência de dados.
 Evidências e limites externos em `docs/QA-MODAL-PERFORMANCE-20261010.md`.
 
+Entrega de fontes: DM Sans variável e Gupter Regular/Bold recebem WOFF2 completos
+locais, preservando TTF e fallback, glifos, métricas e tabelas de variação/licença.
+342840→142372bytes (58,47% de economia), sem claim de Web Vitals. Preloads
+acompanham o formato preferido. 51Node/DOM, builds normal/Pages e HTTPloopback
+byteequal/MIME aprovados; reprodução e limites em `docs/QA-FONTES-20261010.md`.
+
 Vite foi atualizado de 7.3.3 para 7.3.7 e suas transitivas esbuild, PostCSS,
 nanoid e source-map-js receberam versões corrigidas dentro das faixas suportadas.
 Audit completo e de produção: zero avisos (baseline: cinco avisos dev).
