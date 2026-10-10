@@ -111,6 +111,10 @@ A primeira revisão identificou dependência entre os cenários DOM; a correçã
 isola montagem/desmontagem, estado e preenchimento por caso. A revisão final
 confirmou esse ajuste, `envFile: false` e reabertura durante envio, sem bloqueadores.
 Os três casos passaram individualmente por filtro e os 48 passaram em conjunto.
+O workflow `quality.yml` executa instalação, testes e os dois builds em pushes
+para `develop` e PRs para `main`, com Node 22 e permissão somente de leitura.
+Antes deste lote os testes automáticos rodavam apenas no fluxo Pages após push
+em `main`. O novo job não publica, envia contatos ou usa credenciais de transporte.
 Publicação segue o fluxo do projeto; o implementador deixou diff sem
 staging/commit/push. Rollback: reverter o futuro commit de código;
 não existem migrações de dados ou alterações de configuração a desfazer.
