@@ -91,6 +91,13 @@ decisões em `docs/QA-CONTATO-20261010.md`.
 
 ## Tooling — correções compatíveis em 10/10/2026
 
+Etapa final de acessibilidade: o fundo agora recebe inert/aria-hidden enquanto o
+diálogo de atendimento está aberto, com restauração exata no fechamento/unmount.
+Regressão RED→GREEN,49Node/DOM e builds normal/Pages aprovados. Um protótipo de
+splitdomAnimation acrescentou bytes/request e foi descartado; Motion permanece
+síncrono. Offline/PWA continuaNao, sem service worker ou persistência de dados.
+Evidências e limites externos em `docs/QA-MODAL-PERFORMANCE-20261010.md`.
+
 Vite foi atualizado de 7.3.3 para 7.3.7 e suas transitivas esbuild, PostCSS,
 nanoid e source-map-js receberam versões corrigidas dentro das faixas suportadas.
 Audit completo e de produção: zero avisos (baseline: cinco avisos dev).
