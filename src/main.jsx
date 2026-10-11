@@ -386,6 +386,13 @@ function LegalContactChat() {
 
     document.body.classList.add("has-open-dialog");
     closeButtonRef.current?.focus();
+    const background = Array.from(document.getElementById("root")?.children ?? [])
+      .filter(element => !element.contains(panelRef.current))
+      .map(element => ({ element, inert: element.getAttribute("inert"), hidden: element.getAttribute("aria-hidden") }));
+    for (const { element } of background) {
+      element.setAttribute("inert", "");
+      element.setAttribute("aria-hidden", "true");
+    }
 
     const handleDialogKeyDown = (event) => {
       if (event.key === "Escape") {
@@ -413,6 +420,10 @@ function LegalContactChat() {
 
     document.addEventListener("keydown", handleDialogKeyDown);
     return () => {
+      for (const { element, inert, hidden } of background) {
+        if (inert === null) element.removeAttribute("inert"); else element.setAttribute("inert", inert);
+        if (hidden === null) element.removeAttribute("aria-hidden"); else element.setAttribute("aria-hidden", hidden);
+      }
       document.body.classList.remove("has-open-dialog");
       document.removeEventListener("keydown", handleDialogKeyDown);
     };

@@ -98,6 +98,30 @@ after(async () => {
   }
 });
 
+test("painel modal isola o conteúdo assistivo e restaura atributos ao fechar e desmontar", async () => {
+  const background = Array.from(document.getElementById("root").children)
+    .filter(element => !element.classList.contains("legal-chat"));
+  assert.ok(background.length >= 4);
+  for (const element of background) {
+    assert.equal(element.hasAttribute("inert"), true, "background must not accept focus while modal is open");
+    assert.equal(element.getAttribute("aria-hidden"), "true", "background must be excluded from assistive navigation");
+  }
+  assert.equal(document.activeElement.getAttribute("aria-label"), "Fechar atendimento inicial");
+  await click('[aria-label="Fechar atendimento inicial"]');
+  for (const element of background) {
+    assert.equal(element.hasAttribute("inert"), false);
+    assert.equal(element.hasAttribute("aria-hidden"), false);
+  }
+  const main = document.getElementById("main-content");
+  main.setAttribute("aria-hidden", "false");
+  await click(".legal-chat-toggle");
+  assert.equal(main.getAttribute("aria-hidden"), "true");
+  await React.act(async () => { root.unmount(); });
+  root = undefined;
+  assert.equal(main.hasAttribute("inert"), false);
+  assert.equal(main.getAttribute("aria-hidden"), "false", "cleanup preserves attributes owned by other code");
+});
+
 test("formulário real bloqueia submissão dupla ao reabrir, conserva campos no deadline e permite tentativa manual", async (t) => {
   const nativeTimeout = globalThis.setTimeout;
   const nativeClear = globalThis.clearTimeout;
