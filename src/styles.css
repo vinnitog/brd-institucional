@@ -1219,6 +1219,11 @@ footer a:focus-visible {
   padding: 0 10px 0 0;
 }
 
+.social-link > span:not([aria-hidden]) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .social-link svg,
 .social-link > span[aria-hidden="true"] {
   display: grid;
