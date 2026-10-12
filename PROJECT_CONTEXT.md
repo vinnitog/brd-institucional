@@ -113,3 +113,16 @@ de UI, CSS, destinatário, endpoint ou configuração de contato. Após npm ci, 
 em bytes/hash/gzip ao baseline. Evidências e limites:
 `docs/QA-DEPENDENCIAS-20261010.md`.
 
+## Teclado e reflow — 12/10/2026
+
+Uma ampliação fictícia do texto raiz em 2× reproduziu overflow horizontal de
+18,31 px no LinkedIn do rodapé. O rótulo flex agora quebra quando necessário,
+conservando texto, ícone, marca e apresentação normal. Onze casos Playwright
+completam as regressões DOM: skip link, foco/inert/Escape, menu mobile,
+Tab/Shift+Tab no diálogo, reflow 320/390/640 px, gráfico legível e contato
+sucesso/erro/timeout com POST exclusivamente interceptado. 51 Node/DOM, builds
+normal/Pages e actionlint aprovados; Playwright 1.62.1 é dev-only e o CI adiciona
+a mesma prova funcional sem secrets/deploy. Não equivale a leitor de tela,
+zoom nativo, aparelho físico ou recebimento real. Evidências e limites em
+`docs/QA-TECLADO-REFLOW-20261012.md`.
+

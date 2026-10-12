@@ -7,7 +7,8 @@
     "build": "vite build",
     "build:pages": "vite build --base=/brd-institucional/",
     "preview": "vite preview",
-    "test": "node --test unit/*.test.js"
+    "test": "node --test unit/*.test.js",
+    "test:browser": "node scripts/qa-browser.mjs"
   },
   "dependencies": {
     "motion": "^12.42.2",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "jsdom": "^26.1.0",
+    "playwright": "1.62.1",
     "vite": "^7.3.7"
   }
 }
