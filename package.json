@@ -8,7 +8,8 @@
     "build:pages": "vite build --base=/brd-institucional/",
     "preview": "vite preview",
     "test": "node --test unit/*.test.js",
-    "test:browser": "node scripts/qa-browser.mjs"
+    "test:browser": "node scripts/qa-browser.mjs",
+    "test:motion": "node scripts/qa-motion.mjs"
   },
   "dependencies": {
     "motion": "^12.42.2",
