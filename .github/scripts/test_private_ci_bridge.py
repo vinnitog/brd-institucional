@@ -35,6 +35,15 @@ class AdapterTests(unittest.TestCase):
         with patch.dict(os.environ, {'ISSUE_NUMBER': '3', 'GITHUB_REPOSITORY': 'vinnitog/BRD-Institucional'}):
             self.assertEqual(bridge.issue_number(), '3')
 
+    def test_private_helper_traceback_is_not_written_to_public_logs(self):
+        error = subprocess.CalledProcessError(1, ['python', 'private.py'],
+                    stderr='Traceback (most recent call last):\nPRIVATE_SOURCE_FIXTURE\nValueError: failed')
+        with patch.object(bridge, 'run', side_effect=error), patch('builtins.print') as log:
+            with self.assertRaisesRegex(RuntimeError, 'Private CI helper failed') as raised:
+                bridge.helper(Path('/private'), 'fixture', 'private.py')
+        log.assert_not_called()
+        self.assertNotIn('PRIVATE_SOURCE_FIXTURE', str(raised.exception))
+
     def test_root_must_not_resolve_to_workspace(self):
         with patch.object(bridge.ROOT.__class__, 'resolve', return_value=Path('/tmp/agent-writeable')):
             with self.assertRaisesRegex(RuntimeError, 'protected Linux'):

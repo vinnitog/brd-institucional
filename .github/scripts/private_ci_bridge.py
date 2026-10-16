@@ -96,7 +96,15 @@ def output(name, value):
 
 
 def helper(root, directory, file, *args, env=None):
-    return run(sys.executable, '-I', str(root / directory / file), *args, env=env)
+    try:
+        return run(sys.executable, '-I', str(root / directory / file), *args,
+                   env=env, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as error:
+        # Private Python tracebacks can contain source lines in otherwise public logs.
+        detail = error.stderr or ''
+        if detail and 'Traceback (most recent call last):' not in detail:
+            print(detail, file=sys.stderr)
+        raise RuntimeError(f'Private CI helper failed: {directory}/{file}, exit={error.returncode}.') from None
 
 
 def route(root):
