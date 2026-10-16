@@ -28,7 +28,7 @@ jobs:
           ci-ssh-key: ${{ secrets.BRD_CI_SSH_KEY }}
           utilities-ssh-key: ${{ secrets.TECHTOGS_UTILITIES_SSH_KEY }}
           include-utilities: 'true'
-      - run: python3 -I /opt/brd-ci-provider/bridge.py provider-check
+      - run: python3 -I /var/lib/brd-ci-provider/bridge.py provider-check
   automation-contract:
     runs-on: ubuntu-latest
     timeout-minutes: 3

@@ -449,7 +449,7 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertEqual(agent['env']['GITHUB_TOKEN'], '')
         for step in steps[agent_index + 1:]:
             if (step.get('env') or {}).get('GH_TOKEN'):
-                self.assertIn('/opt/brd-ci-provider/bridge.py', step['run'])
+                self.assertIn('/var/lib/brd-ci-provider/bridge.py', step['run'])
                 self.assertNotIn('.github/scripts/', step['run'])
 
     def test_setup_only_has_no_prompt_and_real_agent_uses_bounded_runner(self):
@@ -501,7 +501,7 @@ class WorkflowContractTests(unittest.TestCase):
                 script = step.get('run', '')
                 self.assertNotIn('npm ', script)
                 if (step.get('env') or {}).get('GH_TOKEN'):
-                    self.assertIn('/opt/brd-ci-provider/bridge.py', script)
+                    self.assertIn('/var/lib/brd-ci-provider/bridge.py', script)
                     self.assertNotIn('.github/scripts/', script)
 
     def test_integration_is_considered_after_failure_or_no_new_pr(self):

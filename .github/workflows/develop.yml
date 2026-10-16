@@ -52,13 +52,13 @@ jobs:
         id: route
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 -I /opt/brd-ci-provider/bridge.py route
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py route
       - name: Download verified ticket documents
         if: steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
         env:
           TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
           TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
-        run: python3 -I /opt/brd-ci-provider/bridge.py documents
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py documents
       - name: Install project dependencies
         if: steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
         run: npm ci
@@ -77,11 +77,11 @@ jobs:
         env:
           GH_TOKEN: ''
           GITHUB_TOKEN: ''
-        run: python3 -I /opt/brd-ci-provider/bridge.py agent
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py agent
       - name: Export changes without credentials or Git metadata
         id: export
         if: always() && steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
-        run: python3 -I /opt/brd-ci-provider/bridge.py export-proposal
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py export-proposal
       - uses: actions/upload-artifact@v4
         if: always() && steps.export.outcome == 'success'
         with:
@@ -159,16 +159,16 @@ jobs:
         id: route
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 -I /opt/brd-ci-provider/bridge.py route
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py route
       - name: Apply only the independently validated patch
         if: needs.validate-proposal.result == 'success' && steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
-        run: python3 -I /opt/brd-ci-provider/bridge.py apply-proposal
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py apply-proposal
       - name: Classify technical diagnostics
         id: classify
         if: needs.validate-proposal.result == 'success' && steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
         env:
           TESTS_PASSED: ${{ needs.develop.outputs.status == 'implemented' }}
-        run: python3 -I /opt/brd-ci-provider/bridge.py classify
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py classify
       - name: Publish validated result without executing product code
         id: finalize
         if: needs.validate-proposal.result == 'success' && steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
@@ -177,7 +177,7 @@ jobs:
           RESULT_FILE: .brd-agent/result.json
           TESTS_PASSED: ${{ needs.develop.outputs.status == 'implemented' }}
           AGENT_MODEL: gpt-5.6-terra
-        run: python3 -I /opt/brd-ci-provider/bridge.py finalize
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py finalize
       - name: Report incomplete execution
         if: always() && !cancelled() && steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == '' && steps.finalize.outputs.complete != 'true'
         env:
@@ -187,7 +187,7 @@ jobs:
           TERRA_REASON: ${{ needs.validate-proposal.result == 'failure' && 'deterministic_tests_failed' || steps.classify.outputs.reason }}
           SOL_REASON: ''
         run: |
-          python3 -I /opt/brd-ci-provider/bridge.py diagnostic
+          python3 -I /var/lib/brd-ci-provider/bridge.py diagnostic
           exit 1
 
   integration-plan:
@@ -222,7 +222,7 @@ jobs:
         id: plan
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 -I /opt/brd-ci-provider/bridge.py prepare
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py prepare
       - name: Stop safely on conflicts
         if: steps.plan.outputs.needs_resolution == 'true'
         run: |
@@ -235,7 +235,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          python3 -I /opt/brd-ci-provider/bridge.py verify
+          python3 -I /var/lib/brd-ci-provider/bridge.py verify
           echo "tested_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           git bundle create "$RUNNER_TEMP/brd-integration/commit.bundle" HEAD
       - uses: actions/upload-artifact@v4
@@ -326,9 +326,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python3 -I /opt/brd-ci-provider/bridge.py publish
-          python3 -I /opt/brd-ci-provider/bridge.py merge
+          python3 -I /var/lib/brd-ci-provider/bridge.py publish
+          python3 -I /var/lib/brd-ci-provider/bridge.py merge
       - name: Keep one develop to main PR for human approval
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 -I /opt/brd-ci-provider/bridge.py promote
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py promote

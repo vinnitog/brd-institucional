@@ -11,7 +11,7 @@ import tempfile
 
 import yaml
 
-ROOT = Path('/opt/brd-ci-provider')
+ROOT = Path('/var/lib/brd-ci-provider')
 CI_REF = '54e70eb28b8ea73a693676f09ed741f71ae5d86a'
 REPOSITORY = 'vinnitog/brd-institucional'
 SECRET_NAMES = ('GH_TOKEN', 'GITHUB_TOKEN', 'OPENAI_API_KEY', 'TRELLO_API_KEY', 'TRELLO_TOKEN')
@@ -74,7 +74,7 @@ def trusted_root():
     for directory in (ROOT.parent, ROOT):
         info = directory.stat()
         if info.st_uid != 0 or info.st_mode & (stat.S_IWGRP | stat.S_IWOTH):
-            raise RuntimeError('Private provider directory is writable by the agent.')
+            raise RuntimeError(f'Unprotected provider directory: {directory}; uid={info.st_uid}, mode={stat.S_IMODE(info.st_mode):04o}.')
     actual = run('git', '-c', f'safe.directory={ROOT}', '-C', str(ROOT), 'rev-parse', 'HEAD', capture_output=True).stdout.strip()
     if actual != CI_REF:
         raise RuntimeError('Private provider commit differs from the audited pin.')

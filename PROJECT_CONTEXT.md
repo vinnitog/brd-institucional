@@ -55,7 +55,7 @@ Validacao em 2026-05-21: React + Vite continua adequado para o site instituciona
 Integracao Trello preparada em 16/10/2026: o repositorio e o site permanecem
 publicos. O workflow local develop.yml usa bootstrap SSH somente leitura de
 brd-ci, fixado em commit, sem chamada a reusable privado e sem publicar seu
-codigo. O provedor e o adaptador ficam protegidos em /opt antes do agente.
+codigo. O provedor e o adaptador ficam protegidos em /var/lib antes do agente.
 Desenvolvimento, QA e publicacao usam runners separados. QA nao recebe chaves
 do provedor nem tokens de escrita; o publicador nao executa codigo do produto.
 Patches e commits de integracao sao conferidos por hash antes da publicacao.

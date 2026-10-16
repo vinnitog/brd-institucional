@@ -21,15 +21,15 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        test ! -e /opt/brd-ci-provider
+        test ! -e /var/lib/brd-ci-provider
         controller_group="$(id -gn)"
-        sudo mv "$GITHUB_WORKSPACE/._brd_ci_bootstrap" /opt/brd-ci-provider
-        sudo install -m 0640 "$GITHUB_WORKSPACE/.github/scripts/private_ci_bridge.py" /opt/brd-ci-provider/bridge.py
-        sudo install -m 0640 "$GITHUB_WORKSPACE/.git/config" /opt/brd-ci-provider/target.gitconfig
-        git rev-parse --verify HEAD | sudo tee /opt/brd-ci-provider/target.head > /dev/null
-        sudo chown -R "root:$controller_group" /opt/brd-ci-provider
-        sudo find /opt/brd-ci-provider -type d -exec chmod 0750 {} +
-        sudo find /opt/brd-ci-provider -type f -exec chmod 0640 {} +
+        sudo mv "$GITHUB_WORKSPACE/._brd_ci_bootstrap" /var/lib/brd-ci-provider
+        sudo install -m 0640 "$GITHUB_WORKSPACE/.github/scripts/private_ci_bridge.py" /var/lib/brd-ci-provider/bridge.py
+        sudo install -m 0640 "$GITHUB_WORKSPACE/.git/config" /var/lib/brd-ci-provider/target.gitconfig
+        git rev-parse --verify HEAD | sudo tee /var/lib/brd-ci-provider/target.head > /dev/null
+        sudo chown -R "root:$controller_group" /var/lib/brd-ci-provider
+        sudo find /var/lib/brd-ci-provider -type d -exec chmod 0750 {} +
+        sudo find /var/lib/brd-ci-provider -type f -exec chmod 0640 {} +
         python3 -m pip install PyYAML==6.0.3
     - name: Read the project's skills pin
       id: utilities

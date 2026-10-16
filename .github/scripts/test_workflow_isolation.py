@@ -33,7 +33,7 @@ class RunnerIsolationTests(unittest.TestCase):
                     self.assertNotIn('npm ', command)
                     self.assertNotIn('node ', command)
                     if 'GH_TOKEN' in step.get('env', {}):
-                        self.assertIn('/opt/brd-ci-provider/bridge.py', command)
+                        self.assertIn('/var/lib/brd-ci-provider/bridge.py', command)
 
     def test_developer_cannot_write_github_or_run_validation_after_agent(self):
         job = self.jobs['develop']
