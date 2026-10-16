@@ -52,6 +52,23 @@ Validacao em 2026-05-21: React + Vite continua adequado para o site instituciona
 
 ## Workflow Padrao
 
+Integracao Trello preparada em 16/10/2026: o repositorio e o site permanecem
+publicos. O workflow local develop.yml usa bootstrap SSH somente leitura de
+brd-ci, fixado em commit, sem chamada a reusable privado e sem publicar seu
+codigo. O provedor e o adaptador ficam protegidos em /var/lib antes do agente.
+Desenvolvimento, QA e publicacao usam runners separados. QA nao recebe chaves
+do provedor nem tokens de escrita; o publicador nao executa codigo do produto.
+Patches e commits de integracao sao conferidos por hash antes da publicacao.
+Gemini faz a triagem no brd-ops; Terra implementa com deadline, documentos
+verificados, revisao e testes. PRs trello/* podem entrar em develop somente
+apos testes; main depende de aprovacao humana. Conflitos de integracao param
+como falha tecnica. Este adaptador usa Terra sem escalonamento pago automatico
+para Sol; falhas tecnicas preservam o diagnostico para recuperacao.
+Ativacao depende da publicacao dos workflows, dos secrets e do opt-in no
+brd-ops. A label "Pode publicar no GitHub" autoriza publicar o conteudo do card
+no repositorio publico; ela nao substitui a triagem de produto. O Pages e a
+hospedagem nao foram alterados por esta integracao.
+
 1. `senior-dev`
 2. `ui-ux-expert`, quando houver front-end
 3. `code-reviewer`

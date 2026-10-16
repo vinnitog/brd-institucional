@@ -1,0 +1,334 @@
+name: BRD Development
+run-name: "Issue #${{ github.event.issue.number || inputs.issue_number }} - ${{ github.event.issue.title || 'Execucao manual' }}"
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue existente a desenvolver
+        required: true
+        type: string
+concurrency:
+  group: brd-issue-${{ github.event.issue.number || inputs.issue_number }}
+  cancel-in-progress: false
+permissions: {}
+env:
+  ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+jobs:
+  develop:
+    name: BRD development agent (gpt-5.6-terra)
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'trello-auto'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+      actions: read
+    outputs:
+      proposal: ${{ steps.export.outcome == 'success' }}
+      base_sha: ${{ steps.export.outputs.base_sha }}
+      patch_sha: ${{ steps.export.outputs.patch_sha256 }}
+      status: ${{ steps.export.outputs.status }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: develop
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ./.github/actions/bootstrap-private-ci
+        with:
+          ci-ssh-key: ${{ secrets.BRD_CI_SSH_KEY }}
+          utilities-ssh-key: ${{ secrets.TECHTOGS_UTILITIES_SSH_KEY }}
+          include-utilities: 'true'
+      - name: Check issue state and existing PR
+        id: route
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py route
+      - name: Download verified ticket documents
+        if: steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
+        env:
+          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+          TRELLO_TOKEN: ${{ secrets.TRELLO_TOKEN }}
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py documents
+      - name: Install project dependencies
+        if: steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
+        run: npm ci
+      - name: Prepare official Codex (no prompt)
+        if: steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
+        uses: openai/codex-action@86365089eb2b84e0a8fb0717b304f8bdcb13b20e
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          codex-home: ${{ runner.temp }}/brd-codex-home
+          safety-strategy: unsafe
+      - name: Develop with the protected bounded runner
+        id: agent
+        if: steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
+        timeout-minutes: 22
+        continue-on-error: true
+        env:
+          GH_TOKEN: ''
+          GITHUB_TOKEN: ''
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py agent
+      - name: Export changes without credentials or Git metadata
+        id: export
+        if: always() && steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py export-proposal
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.export.outcome == 'success'
+        with:
+          name: institutional-proposal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/brd-proposal/
+          if-no-files-found: error
+          retention-days: 7
+
+  validate-proposal:
+    needs: develop
+    if: always() && !cancelled() && needs.develop.outputs.proposal == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      EXPECTED_BASE_SHA: ${{ needs.develop.outputs.base_sha }}
+      EXPECTED_PATCH_SHA: ${{ needs.develop.outputs.patch_sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ needs.develop.outputs.base_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install PyYAML==6.0.3
+      - uses: actions/download-artifact@v4
+        with:
+          name: institutional-proposal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/brd-proposal
+      - name: Apply and validate the exact proposed diff
+        run: python3 -I .github/scripts/private_ci_bridge.py apply-proposal
+      - name: Test implementation without provider keys or write tokens
+        if: needs.develop.outputs.status == 'implemented'
+        run: |
+          npm ci
+          npm test
+          npm run build
+          git diff --exit-code
+
+  publish-proposal:
+    needs: [develop, validate-proposal]
+    if: always() && !cancelled() && (needs.validate-proposal.result == 'success' || needs.validate-proposal.result == 'failure')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      actions: read
+    env:
+      EXPECTED_BASE_SHA: ${{ needs.develop.outputs.base_sha }}
+      EXPECTED_PATCH_SHA: ${{ needs.develop.outputs.patch_sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ needs.develop.outputs.base_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ./.github/actions/bootstrap-private-ci
+        with:
+          ci-ssh-key: ${{ secrets.BRD_CI_SSH_KEY }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: institutional-proposal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/brd-proposal
+      - name: Recheck issue and reconstruct trusted publication context
+        id: route
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py route
+      - name: Apply only the independently validated patch
+        if: needs.validate-proposal.result == 'success' && steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py apply-proposal
+      - name: Classify technical diagnostics
+        id: classify
+        if: needs.validate-proposal.result == 'success' && steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
+        env:
+          TESTS_PASSED: ${{ needs.develop.outputs.status == 'implemented' }}
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py classify
+      - name: Publish validated result without executing product code
+        id: finalize
+        if: needs.validate-proposal.result == 'success' && steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESULT_FILE: .brd-agent/result.json
+          TESTS_PASSED: ${{ needs.develop.outputs.status == 'implemented' }}
+          AGENT_MODEL: gpt-5.6-terra
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py finalize
+      - name: Report incomplete execution
+        if: always() && !cancelled() && steps.route.outputs.actionable == 'true' && steps.route.outputs.existing_pr == '' && steps.finalize.outputs.complete != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TERRA_RESULT: failure
+          SOL_RESULT: skipped
+          TERRA_REASON: ${{ needs.validate-proposal.result == 'failure' && 'deterministic_tests_failed' || steps.classify.outputs.reason }}
+          SOL_REASON: ''
+        run: |
+          python3 -I /var/lib/brd-ci-provider/bridge.py diagnostic
+          exit 1
+
+  integration-plan:
+    needs: [develop, validate-proposal, publish-proposal]
+    if: always() && !cancelled() && needs.develop.result != 'skipped'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    concurrency:
+      group: brd-integration-plan-${{ github.repository }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: read
+      actions: read
+    outputs:
+      has_work: ${{ steps.plan.outputs.has_work }}
+      tested_sha: ${{ steps.bundle.outputs.tested_sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: develop
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ./.github/actions/bootstrap-private-ci
+        with:
+          ci-ssh-key: ${{ secrets.BRD_CI_SSH_KEY }}
+      - name: Prepare integration even when the last attempt has no PR
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py prepare
+      - name: Stop safely on conflicts
+        if: steps.plan.outputs.needs_resolution == 'true'
+        run: |
+          echo '::error::Conflito tecnico: PR preservado para resolucao, sem nova decisao de produto.'
+          exit 1
+      - name: Verify proposed integration and preserve the exact commit
+        id: bundle
+        if: steps.plan.outputs.has_work == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 -I /var/lib/brd-ci-provider/bridge.py verify
+          echo "tested_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git bundle create "$RUNNER_TEMP/brd-integration/commit.bundle" HEAD
+      - uses: actions/upload-artifact@v4
+        if: steps.bundle.outcome == 'success'
+        with:
+          name: institutional-integration-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/brd-integration/
+          if-no-files-found: error
+          retention-days: 7
+
+  validate-integration:
+    needs: integration-plan
+    if: needs.integration-plan.outputs.has_work == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      EXPECTED_INTEGRATION_SHA: ${{ needs.integration-plan.outputs.tested_sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: develop
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@v4
+        with:
+          name: institutional-integration-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/brd-integration
+      - name: Load the controller's proposed commit
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_INTEGRATION_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git fetch "$RUNNER_TEMP/brd-integration/commit.bundle" HEAD
+          test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_INTEGRATION_SHA"
+          git checkout --detach "$EXPECTED_INTEGRATION_SHA"
+      - name: Test exact integration without any provider key or write token
+        run: |
+          npm ci
+          npm test
+          npm run build
+          git diff --exit-code HEAD
+
+  publish-integration:
+    needs: [integration-plan, validate-integration]
+    if: always() && !cancelled() && needs.integration-plan.result == 'success' && (needs.integration-plan.outputs.has_work != 'true' || needs.validate-integration.result == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    concurrency:
+      group: brd-integration-publish-${{ github.repository }}
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      issues: read
+      pull-requests: write
+      actions: read
+    env:
+      EXPECTED_INTEGRATION_SHA: ${{ needs.integration-plan.outputs.tested_sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: develop
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: ./.github/actions/bootstrap-private-ci
+        with:
+          ci-ssh-key: ${{ secrets.BRD_CI_SSH_KEY }}
+      - uses: actions/download-artifact@v4
+        if: needs.integration-plan.outputs.has_work == 'true'
+        with:
+          name: institutional-integration-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/brd-integration
+      - name: Restore only the independently tested integration
+        if: needs.integration-plan.outputs.has_work == 'true'
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_INTEGRATION_SHA" =~ ^[a-f0-9]{40}$ ]]
+          git fetch "$RUNNER_TEMP/brd-integration/commit.bundle" HEAD
+          test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED_INTEGRATION_SHA"
+          git checkout --detach "$EXPECTED_INTEGRATION_SHA"
+      - name: Publish and merge tested integration
+        if: needs.integration-plan.outputs.has_work == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 -I /var/lib/brd-ci-provider/bridge.py publish
+          python3 -I /var/lib/brd-ci-provider/bridge.py merge
+      - name: Keep one develop to main PR for human approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -I /var/lib/brd-ci-provider/bridge.py promote

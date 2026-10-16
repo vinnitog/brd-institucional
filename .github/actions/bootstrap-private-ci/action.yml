@@ -1,0 +1,62 @@
+name: Prepare private CI without a private reusable workflow
+description: Fetch an audited provider with read-only SSH access, outside the agent workspace.
+inputs:
+  ci-ssh-key:
+    required: true
+  utilities-ssh-key:
+    required: false
+  include-utilities:
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      with:
+        repository: vinnitog/brd-ci
+        ref: 54e70eb28b8ea73a693676f09ed741f71ae5d86a
+        ssh-key: ${{ inputs.ci-ssh-key }}
+        path: ._brd_ci_bootstrap
+        persist-credentials: false
+    - name: Protect private implementation and the adapter
+      shell: bash
+      run: |
+        set -euo pipefail
+        test ! -e /var/lib/brd-ci-provider
+        controller_group="$(id -gn)"
+        sudo mv "$GITHUB_WORKSPACE/._brd_ci_bootstrap" /var/lib/brd-ci-provider
+        sudo install -m 0640 "$GITHUB_WORKSPACE/.github/scripts/private_ci_bridge.py" /var/lib/brd-ci-provider/bridge.py
+        sudo install -m 0640 "$GITHUB_WORKSPACE/.git/config" /var/lib/brd-ci-provider/target.gitconfig
+        git rev-parse --verify HEAD | sudo tee /var/lib/brd-ci-provider/target.head > /dev/null
+        sudo chown -R "root:$controller_group" /var/lib/brd-ci-provider
+        sudo find /var/lib/brd-ci-provider -type d -exec chmod 0750 {} +
+        sudo find /var/lib/brd-ci-provider -type f -exec chmod 0640 {} +
+        python3 -m pip install PyYAML==6.0.3
+    - name: Read the project's skills pin
+      id: utilities
+      if: inputs.include-utilities == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        ref="$(node -p 'require(process.env.GITHUB_WORKSPACE + "/.techtogs-utilities.json").libraryCommit')"
+        [[ "$ref" =~ ^[a-f0-9]{40}$ ]] || { echo "Invalid utilities pin" >&2; exit 1; }
+        echo "ref=$ref" >> "$GITHUB_OUTPUT"
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      if: inputs.include-utilities == 'true'
+      with:
+        repository: vinnitog/techtogs-utilities
+        ref: ${{ steps.utilities.outputs.ref }}
+        ssh-key: ${{ inputs.utilities-ssh-key }}
+        path: ._utilities_bootstrap
+        persist-credentials: false
+    - name: Install the existing project skills
+      if: inputs.include-utilities == 'true'
+      shell: bash
+      run: |
+        set -euo pipefail
+        test ! -e /opt/brd-utilities-provider
+        sudo mv "$GITHUB_WORKSPACE/._utilities_bootstrap" /opt/brd-utilities-provider
+        node /opt/brd-utilities-provider/scripts/utilities.mjs install --project "$GITHUB_WORKSPACE"
+        node /opt/brd-utilities-provider/scripts/utilities.mjs verify --project "$GITHUB_WORKSPACE"
+        sudo chown -R root:root /opt/brd-utilities-provider
+        sudo chmod -R go-w /opt/brd-utilities-provider
+        echo "TECHTOGS_UTILITIES_PATH=/opt/brd-utilities-provider" >> "$GITHUB_ENV"
